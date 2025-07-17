@@ -1,8 +1,9 @@
 'use client';
 
-import { Bar, ComposedChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Line } from 'recharts';
+import { Bar, ComposedChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Line, Cell } from 'recharts';
 import { type EnergyData } from '@/types/energy';
 import { ChartContainer, ChartTooltipContent, ChartConfig } from '@/components/ui/chart';
+import { getSeason } from '@/lib/utils';
 
 interface EnergyChartProps {
   data: EnergyData[];
@@ -19,11 +20,19 @@ const chartConfig = {
   }
 } satisfies ChartConfig;
 
+const seasonColors: { [key: string]: string } = {
+  'Verão': 'hsl(var(--chart-5))',      // Laranja
+  'Outono': 'hsl(var(--chart-3))',     // Amarelo
+  'Inverno': 'hsl(var(--chart-1))',    // Azul
+  'Primavera': 'hsl(var(--chart-2))', // Verde
+};
+
 export default function EnergyChart({ data }: EnergyChartProps) {
   const chartData = data.map(item => ({
     date: item.mesAno,
     consumption: item.consumoAtivoKwh,
     cost: item.totalFatura,
+    season: getSeason(item.mesAno),
   }));
 
   return (
@@ -61,7 +70,11 @@ export default function EnergyChart({ data }: EnergyChartProps) {
         />
         <Tooltip content={<ChartTooltipContent />} />
         <Legend />
-        <Bar dataKey="consumption" yAxisId="left" fill="var(--color-consumption)" radius={[4, 4, 0, 0]} />
+        <Bar dataKey="consumption" yAxisId="left" radius={[4, 4, 0, 0]}>
+          {chartData.map((entry, index) => (
+            <Cell key={`cell-${index}`} fill={seasonColors[entry.season]} />
+          ))}
+        </Bar>
         <Line type="monotone" dataKey="cost" yAxisId="right" stroke="var(--color-cost)" strokeWidth={2} dot={{ fill: "var(--color-cost)" }} activeDot={{ r: 6 }} />
       </ComposedChart>
     </ChartContainer>
