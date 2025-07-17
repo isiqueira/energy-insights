@@ -125,7 +125,7 @@ function AnalysisPageContent() {
                     <span className="sr-only">Ano Anterior</span>
                 </Button>
                 <div className="text-xl font-semibold text-center w-24">
-                    Ano {selectedYear}
+                    {selectedYear}
                 </div>
                 <Button variant="outline" size="icon" onClick={handleNextYear} disabled={selectedYearIndex === 0}>
                     <ChevronRight className="h-4 w-4" />
