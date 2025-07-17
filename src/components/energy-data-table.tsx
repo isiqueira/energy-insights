@@ -30,6 +30,16 @@ const formatCurrency = (amount: number) => new Intl.NumberFormat("pt-BR", {
 }).format(amount);
 
 
+const renderVariation = (variation: number) => {
+    const isPositive = variation > 0;
+    return (
+        <div className={`flex items-center justify-end gap-1 font-medium ${isPositive ? 'text-destructive' : 'text-success'}`}>
+        {isPositive ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />}
+        <span>{variation.toFixed(1).replace('.', ',')}%</span>
+        </div>
+    );
+}
+
 export const columns: ColumnDef<EnergyData>[] = [
   {
     accessorKey: 'mesAno',
@@ -72,15 +82,25 @@ export const columns: ColumnDef<EnergyData>[] = [
         }
   
         const variation = ((currentConsumption - previousConsumption) / previousConsumption) * 100;
-        const isPositive = variation > 0;
-  
-        return (
-          <div className={`flex items-center justify-end gap-1 font-medium ${isPositive ? 'text-destructive' : 'text-success'}`}>
-            {isPositive ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />}
-            <span>{variation.toFixed(1).replace('.', ',')}%</span>
-          </div>
-        );
+        return renderVariation(variation);
       },
+  },
+  {
+    id: 'consumoCompAnoAnterior',
+    header: () => <div className="text-right">Variação Consumo (vs. Ano Ant.)</div>,
+    cell: ({ row, table }) => {
+      const allData = table.options.data;
+      const [month, year] = row.original.mesAno.split('/');
+      const prevYearMesAno = `${month}/${parseInt(year) - 1}`;
+      const prevYearData = allData.find(d => d.mesAno === prevYearMesAno);
+
+      if (!prevYearData || prevYearData.consumoAtivoKwh === 0) {
+        return <div className="text-right text-muted-foreground">-</div>;
+      }
+      
+      const variation = ((row.original.consumoAtivoKwh - prevYearData.consumoAtivoKwh) / prevYearData.consumoAtivoKwh) * 100;
+      return renderVariation(variation);
+    },
   },
   {
     accessorKey: 'totalFatura',
@@ -102,6 +122,23 @@ export const columns: ColumnDef<EnergyData>[] = [
     }
   },
   {
+    id: 'custoCompAnoAnterior',
+    header: () => <div className="text-right">Variação Custo (vs. Ano Ant.)</div>,
+    cell: ({ row, table }) => {
+      const allData = table.options.data;
+      const [month, year] = row.original.mesAno.split('/');
+      const prevYearMesAno = `${month}/${parseInt(year) - 1}`;
+      const prevYearData = allData.find(d => d.mesAno === prevYearMesAno);
+
+      if (!prevYearData || prevYearData.totalFatura === 0) {
+        return <div className="text-right text-muted-foreground">-</div>;
+      }
+      
+      const variation = ((row.original.totalFatura - prevYearData.totalFatura) / prevYearData.totalFatura) * 100;
+      return renderVariation(variation);
+    },
+  },
+  {
     id: 'custoKwh',
     header: () => <div className="text-right">Custo/kWh (R$)</div>,
     cell: ({ row }) => {
@@ -117,36 +154,6 @@ export const columns: ColumnDef<EnergyData>[] = [
       const formatted = formatCurrency(custoKwh);
 
       return <div className="text-right">{formatted}</div>;
-    },
-  },
-  {
-    id: 'consumoAnoAnterior',
-    header: () => <div className="text-right">Consumo (kWh) Ano Anterior</div>,
-    cell: ({ row, table }) => {
-      const allData = table.options.data;
-      const [month, year] = row.original.mesAno.split('/');
-      const prevYearMesAno = `${month}/${parseInt(year) - 1}`;
-      const prevYearData = allData.find(d => d.mesAno === prevYearMesAno);
-
-      if (!prevYearData) {
-        return <div className="text-right text-muted-foreground">-</div>;
-      }
-      return <div className="text-right">{prevYearData.consumoAtivoKwh.toFixed(2)}</div>;
-    },
-  },
-  {
-    id: 'faturaAnoAnterior',
-    header: () => <div className="text-right">Fatura Total (Ano Anterior)</div>,
-    cell: ({ row, table }) => {
-      const allData = table.options.data;
-      const [month, year] = row.original.mesAno.split('/');
-      const prevYearMesAno = `${month}/${parseInt(year) - 1}`;
-      const prevYearData = allData.find(d => d.mesAno === prevYearMesAno);
-
-      if (!prevYearData) {
-        return <div className="text-right text-muted-foreground">-</div>;
-      }
-      return <div className="text-right font-medium">{formatCurrency(prevYearData.totalFatura)}</div>;
     },
   },
   {
