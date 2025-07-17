@@ -43,7 +43,17 @@ const renderVariation = (variation: number) => {
 export const columns: ColumnDef<EnergyData>[] = [
   {
     accessorKey: 'mesAno',
-    header: 'Mês/Ano',
+    header: ({ column }) => {
+      return (
+          <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+          Mês/Ano
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+      );
+    },
     cell: ({ row }) => <div className="font-medium">{row.original.mesAno}</div>,
   },
   {
@@ -164,9 +174,7 @@ export const columns: ColumnDef<EnergyData>[] = [
 ];
 
 export default function EnergyDataTable({ data }: { data: EnergyData[] }) {
-  const [sorting, setSorting] = React.useState<SortingState>([
-    { id: 'mesAno', desc: true }
-  ]);
+  const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
 
   const table = useReactTable({
@@ -182,6 +190,11 @@ export default function EnergyDataTable({ data }: { data: EnergyData[] }) {
       sorting,
       columnFilters,
     },
+    initialState: {
+        pagination: {
+            pageSize: 12,
+        }
+    }
   });
 
   return (
