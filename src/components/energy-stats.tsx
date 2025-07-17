@@ -65,7 +65,7 @@ export default function EnergyStats({ allData, currentMonthData, previousMonthDa
           {consumptionChange >= 0 ? <ArrowUp className="h-4 w-4 text-destructive" /> : <ArrowDown className="h-4 w-4 text-success" />}
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{consumptionChange.toFixed(1).replace('.',',')}%</div>
+          <div className={`text-2xl font-bold ${consumptionChange >= 0 ? 'text-destructive' : 'text-success'}`}>{consumptionChange.toFixed(1).replace('.',',')}%</div>
           <p className="text-xs text-muted-foreground">
             vs. {previousMonthData?.mesAno || 'mês anterior'}
           </p>
@@ -77,7 +77,7 @@ export default function EnergyStats({ allData, currentMonthData, previousMonthDa
           {costChange >= 0 ? <ArrowUp className="h-4 w-4 text-destructive" /> : <ArrowDown className="h-4 w-4 text-success" />}
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{costChange.toFixed(1).replace('.',',')}%</div>
+          <div className={`text-2xl font-bold ${costChange >= 0 ? 'text-destructive' : 'text-success'}`}>{costChange.toFixed(1).replace('.',',')}%</div>
           <p className="text-xs text-muted-foreground">
              vs. {previousMonthData?.mesAno || 'mês anterior'}
           </p>
