@@ -7,7 +7,7 @@ import { getSeason } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Home, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Home, ChevronLeft, ChevronRight, ArrowUp, ArrowDown } from 'lucide-react';
 import { Bar, BarChart, CartesianGrid, Cell, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import SeasonLegend from '@/components/season-legend';
 
@@ -27,6 +27,19 @@ const seasonColors: { [key: string]: string } = {
   'Inverno': 'hsl(var(--chart-1))',
   'Primavera': 'hsl(var(--chart-2))',
 };
+
+const renderVariation = (variation: number) => {
+    if (isNaN(variation) || !isFinite(variation)) {
+        return <div className="text-right text-muted-foreground">-</div>;
+    }
+    const isPositive = variation > 0;
+    return (
+        <div className={`flex items-center justify-end gap-1 font-medium ${isPositive ? 'text-destructive' : 'text-success'}`}>
+        {isPositive ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />}
+        <span>{variation.toFixed(1).replace('.', ',')}%</span>
+        </div>
+    );
+}
 
 function AnalysisPageContent() {
   const [data, setData] = useState<EnergyData[] | null>(null);
@@ -98,6 +111,7 @@ function AnalysisPageContent() {
 
   const selectedYear = years[selectedYearIndex];
   const yearData = seasonalData[selectedYear] || {};
+  const prevYearData = seasonalData[String(parseInt(selectedYear) - 1)] || {};
   
   const chartData = Object.entries(yearData).map(([season, values]) => ({
     name: season,
@@ -175,23 +189,37 @@ function AnalysisPageContent() {
                 <TableRow>
                   <TableHead>Estação</TableHead>
                   <TableHead className="text-right">Consumo Total (kWh)</TableHead>
+                  <TableHead className="text-right">Variação Consumo (%)</TableHead>
                   <TableHead className="text-right">Custo Total (R$)</TableHead>
-                  <TableHead className="text-right">Consumo Médio Mensal (kWh)</TableHead>
-                  <TableHead className="text-right">Custo Médio Mensal (R$)</TableHead>
+                  <TableHead className="text-right">Variação Custo (%)</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {Object.entries(yearData).map(([season, values]) => (
-                  values.months > 0 && (
+                {Object.entries(yearData).map(([season, currentValues]) => {
+                  if (currentValues.months === 0) return null;
+                  
+                  const prevSeasonValues = prevYearData[season as keyof typeof prevYearData];
+                  
+                  let consumptionVariation = NaN;
+                  if (prevSeasonValues && prevSeasonValues.totalConsumption > 0) {
+                    consumptionVariation = ((currentValues.totalConsumption - prevSeasonValues.totalConsumption) / prevSeasonValues.totalConsumption) * 100;
+                  }
+
+                  let costVariation = NaN;
+                   if (prevSeasonValues && prevSeasonValues.totalCost > 0) {
+                    costVariation = ((currentValues.totalCost - prevSeasonValues.totalCost) / prevSeasonValues.totalCost) * 100;
+                  }
+                  
+                  return (
                     <TableRow key={season}>
                       <TableCell className="font-medium">{season}</TableCell>
-                      <TableCell className="text-right">{values.totalConsumption.toFixed(2)}</TableCell>
-                      <TableCell className="text-right">{new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(values.totalCost)}</TableCell>
-                      <TableCell className="text-right">{(values.totalConsumption / values.months).toFixed(2)}</TableCell>
-                      <TableCell className="text-right">{new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(values.totalCost / values.months)}</TableCell>
+                      <TableCell className="text-right">{currentValues.totalConsumption.toFixed(2)}</TableCell>
+                      <TableCell className="text-right">{renderVariation(consumptionVariation)}</TableCell>
+                      <TableCell className="text-right">{new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(currentValues.totalCost)}</TableCell>
+                      <TableCell className="text-right">{renderVariation(costVariation)}</TableCell>
                     </TableRow>
                   )
-                ))}
+                })}
               </TableBody>
             </Table>
           </CardContent>
