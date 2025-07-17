@@ -1,6 +1,6 @@
 import { type EnergyData } from '@/types/energy';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowDown, ArrowUp, BarChart, TrendingUp, Zap } from 'lucide-react';
+import { ArrowDown, ArrowUp, BarChart, DollarSign, TrendingUp, Zap } from 'lucide-react';
 
 interface EnergyStatsProps {
   data: EnergyData[];
@@ -23,10 +23,16 @@ export default function EnergyStats({ data }: EnergyStatsProps) {
     consumptionChange = ((latestMonth.consumoAtivoKwh - previousMonth.consumoAtivoKwh) / previousMonth.consumoAtivoKwh) * 100;
   }
 
+  let costChange = 0;
+  if(previousMonth && previousMonth.totalFatura > 0) {
+    costChange = ((latestMonth.totalFatura - previousMonth.totalFatura) / previousMonth.totalFatura) * 100;
+  }
+  
   const formatNumber = (num: number) => isNaN(num) ? 'N/A' : Math.round(num).toLocaleString();
+  const formatCurrency = (num: number) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(num);
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Total Consumption</CardTitle>
@@ -59,13 +65,25 @@ export default function EnergyStats({ data }: EnergyStatsProps) {
       </Card>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Month-over-Month</CardTitle>
+          <CardTitle className="text-sm font-medium">Consumption MoM</CardTitle>
           {consumptionChange >= 0 ? <ArrowUp className="h-4 w-4 text-destructive" /> : <ArrowDown className="h-4 w-4 text-success" />}
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{formatNumber(latestMonth.consumoAtivoKwh)} kWh</div>
           {previousMonth && <p className={`text-xs ${consumptionChange >= 0 ? 'text-destructive' : 'text-success'}`}>
-            {consumptionChange.toFixed(1)}% from previous month
+            {consumptionChange.toFixed(1)}% from last month
+          </p>}
+        </CardContent>
+      </Card>
+       <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Cost MoM</CardTitle>
+          {costChange >= 0 ? <ArrowUp className="h-4 w-4 text-destructive" /> : <ArrowDown className="h-4 w-4 text-success" />}
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{formatCurrency(latestMonth.totalFatura)}</div>
+          {previousMonth && <p className={`text-xs ${costChange >= 0 ? 'text-destructive' : 'text-success'}`}>
+            {costChange.toFixed(1)}% from last month
           </p>}
         </CardContent>
       </Card>
