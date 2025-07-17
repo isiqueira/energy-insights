@@ -1,6 +1,6 @@
 'use client';
 
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Alert } from '@/components/ui/alert';
 import { Sun, CloudSun, Snowflake, Leaf } from 'lucide-react';
 
 interface SeasonAlertProps {
@@ -11,8 +11,6 @@ type Season = {
     name: 'Verão' | 'Outono' | 'Inverno' | 'Primavera';
     icon: React.ReactNode;
     colorClass: string;
-    borderColorClass: string;
-    bgColorClass: string;
 };
 
 const getSeason = (mesAno: string): Season => {
@@ -23,33 +21,25 @@ const getSeason = (mesAno: string): Season => {
         return { 
             name: 'Verão', 
             icon: <Sun className="h-5 w-5" />, 
-            colorClass: 'text-chart-3', 
-            borderColorClass: 'border-chart-3/50', 
-            bgColorClass: 'bg-chart-3/5' 
+            colorClass: 'text-chart-3'
         };
     } else if (month >= 3 && month <= 5) {
         return { 
             name: 'Outono', 
             icon: <Leaf className="h-5 w-5" />, 
-            colorClass: 'text-chart-5', 
-            borderColorClass: 'border-chart-5/50', 
-            bgColorClass: 'bg-chart-5/5' 
+            colorClass: 'text-chart-5'
         };
     } else if (month >= 6 && month <= 8) {
         return { 
             name: 'Inverno', 
             icon: <Snowflake className="h-5 w-5" />, 
-            colorClass: 'text-chart-1', 
-            borderColorClass: 'border-chart-1/50', 
-            bgColorClass: 'bg-chart-1/5' 
+            colorClass: 'text-chart-1'
         };
     } else {
         return { 
             name: 'Primavera', 
             icon: <CloudSun className="h-5 w-5" />, 
-            colorClass: 'text-chart-2', 
-            borderColorClass: 'border-chart-2/50', 
-            bgColorClass: 'bg-chart-2/5'
+            colorClass: 'text-chart-2'
         };
     }
 };
@@ -58,7 +48,7 @@ export default function SeasonAlert({ mesAno }: SeasonAlertProps) {
     const season = getSeason(mesAno);
 
     return (
-        <Alert className={`flex items-center justify-center gap-2 p-2 max-w-xs mx-auto ${season.borderColorClass} ${season.bgColorClass} ${season.colorClass}`}>
+        <Alert className={`flex items-center justify-center gap-2 p-2 max-w-xs mx-auto border-0 bg-transparent ${season.colorClass}`}>
             {season.icon}
             <span className="font-semibold text-sm">{season.name}</span>
         </Alert>
