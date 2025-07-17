@@ -96,9 +96,14 @@ export default function FileUploader({ onDataLoaded }: FileUploaderProps) {
           newRow.totalFatura = Number(String(newRow.totalFatura).replace(',', '.'));
           
           return newRow as EnergyData;
-        }).filter(item => item.leituraDate && !isNaN(item.leituraDate.getTime()) && item.consumoAtivoKwh != null);
+        }).filter(item => item.mesAno && item.consumoAtivoKwh != null);
+        
+        const parseMesAno = (mesAno: string): Date => {
+          const [month, year] = mesAno.split('/');
+          return new Date(Number(year), Number(month) - 1, 1);
+        };
 
-        parsedData.sort((a, b) => a.leituraDate.getTime() - b.leituraDate.getTime());
+        parsedData.sort((a, b) => parseMesAno(a.mesAno).getTime() - parseMesAno(b.mesAno).getTime());
         
         onDataLoaded(parsedData, file.name);
       } catch (error) {
