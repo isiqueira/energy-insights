@@ -155,7 +155,7 @@ export const columns: ColumnDef<EnergyData>[] = [
 
 export default function EnergyDataTable({ data }: { data: EnergyData[] }) {
   const [sorting, setSorting] = React.useState<SortingState>([
-    { id: 'leituraDate', desc: true }
+    { id: 'mesAno', desc: true }
   ]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
 
