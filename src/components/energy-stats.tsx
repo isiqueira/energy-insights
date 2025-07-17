@@ -13,11 +13,16 @@ export default function EnergyStats({ allData, currentMonthData, previousMonthDa
     return null;
   }
 
-  const totalConsumption = allData.reduce((acc, item) => acc + item.consumoAtivoKwh, 0);
-  const avgMonthlyConsumption = totalConsumption / allData.length;
-  
-  const totalDays = allData.reduce((acc, item) => acc + item.numDiasFaturamento, 0);
-  const avgDailyConsumption = totalConsumption / totalDays;
+  const currentYear = currentMonthData.mesAno.split('/')[1];
+  const currentMonthIndex = parseInt(currentMonthData.mesAno.split('/')[0], 10);
+
+  const yearToDateData = allData.filter(item => {
+    const [itemMonth, itemYear] = item.mesAno.split('/');
+    return itemYear === currentYear && parseInt(itemMonth, 10) <= currentMonthIndex;
+  });
+
+  const ytdConsumption = yearToDateData.reduce((acc, item) => acc + item.consumoAtivoKwh, 0);
+  const ytdCost = yearToDateData.reduce((acc, item) => acc + item.totalFatura, 0);
 
   let consumptionChange = 0;
   if(previousMonthData && previousMonthData.consumoAtivoKwh > 0) {
@@ -33,7 +38,7 @@ export default function EnergyStats({ allData, currentMonthData, previousMonthDa
   const formatCurrency = (num: number) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(num);
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Consumo no Mês</CardTitle>
@@ -80,12 +85,22 @@ export default function EnergyStats({ allData, currentMonthData, previousMonthDa
       </Card>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Consumo Médio Diário</CardTitle>
+          <CardTitle className="text-sm font-medium">Consumo Acumulado no Ano</CardTitle>
           <TrendingUp className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{currentMonthData.mediaAtivaKwhDia.toFixed(2)} kWh/dia</div>
-          <p className="text-xs text-muted-foreground">Durante {currentMonthData.mesAno}</p>
+          <div className="text-2xl font-bold">{formatNumber(ytdConsumption)} kWh</div>
+          <p className="text-xs text-muted-foreground">Total em {currentYear} até agora</p>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Custo Acumulado no Ano</CardTitle>
+          <BarChart className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{formatCurrency(ytdCost)}</div>
+          <p className="text-xs text-muted-foreground">Total em {currentYear} até agora</p>
         </CardContent>
       </Card>
     </div>
