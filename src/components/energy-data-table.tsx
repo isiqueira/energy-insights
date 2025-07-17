@@ -84,12 +84,12 @@ export const columns: ColumnDef<EnergyData>[] = [
         const sortedRows = table.getSortedRowModel().rows;
         const currentIndex = sortedRows.findIndex(sortedRow => sortedRow.original.isoDate === row.original.isoDate);
   
-        if (currentIndex >= sortedRows.length - 1) {
+        if (currentIndex <= 0) { // Alterado de >= sortedRows.length -1 para <= 0 pois a ordem é decrescente
           return <div className="text-right text-muted-foreground">-</div>;
         }
   
         const currentConsumption = row.original.consumoAtivoKwh;
-        const previousConsumption = sortedRows[currentIndex + 1].original.consumoAtivoKwh;
+        const previousConsumption = sortedRows[currentIndex - 1].original.consumoAtivoKwh;
   
         if (previousConsumption === 0) {
           return <div className="text-right text-muted-foreground">N/A</div>;
@@ -103,6 +103,8 @@ export const columns: ColumnDef<EnergyData>[] = [
     id: 'consumoCompAnoAnterior',
     header: () => <div className="text-right">Variação Consumo (vs. Ano Ant.)</div>,
     cell: ({ row, table }) => {
+      if (!row.original.isoDate) return <div className="text-right text-muted-foreground">-</div>;
+      
       const allData = table.options.data;
       const [year, month] = row.original.isoDate.split('-').map(Number);
       const prevYearIsoDate = `${year - 1}-${String(month).padStart(2, '0')}-01`;
@@ -139,6 +141,8 @@ export const columns: ColumnDef<EnergyData>[] = [
     id: 'custoCompAnoAnterior',
     header: () => <div className="text-right">Variação Custo (vs. Ano Ant.)</div>,
     cell: ({ row, table }) => {
+      if (!row.original.isoDate) return <div className="text-right text-muted-foreground">-</div>;
+
       const allData = table.options.data;
       const [year, month] = row.original.isoDate.split('-').map(Number);
       const prevYearIsoDate = `${year - 1}-${String(month).padStart(2, '0')}-01`;
