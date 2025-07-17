@@ -96,6 +96,27 @@ export const columns: ColumnDef<EnergyData>[] = [
     }
   },
   {
+    id: 'custoKwh',
+    header: () => <div className="text-right">Custo/kWh (R$)</div>,
+    cell: ({ row }) => {
+      const totalFatura = row.original.totalFatura;
+      const consumoKwh = row.original.consumoAtivoKwh;
+
+      if (consumoKwh === 0) {
+        return <div className="text-right text-muted-foreground">N/A</div>;
+      }
+
+      const custoKwh = totalFatura / consumoKwh;
+      
+      const formatted = new Intl.NumberFormat("pt-BR", {
+          style: "currency",
+          currency: "BRL"
+      }).format(custoKwh);
+
+      return <div className="text-right">{formatted}</div>;
+    },
+  },
+  {
     accessorKey: 'mediaAtivaKwhDia',
     header: () => <div className="text-right">Média kWh/dia</div>,
     cell: ({ row }) => <div className="text-right">{row.original.mediaAtivaKwhDia.toFixed(2)}</div>
