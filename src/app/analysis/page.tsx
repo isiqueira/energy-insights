@@ -1,14 +1,14 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { type EnergyData } from '@/types/energy';
 import { getSeason } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Home } from 'lucide-react';
-import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Home, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Bar, BarChart, CartesianGrid, Cell, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 type SeasonalData = {
   [year: string]: {
@@ -20,9 +20,17 @@ type SeasonalData = {
   }
 };
 
+const seasonColors: { [key: string]: string } = {
+  'Verão': 'hsl(var(--chart-5))',      // Laranja
+  'Outono': 'hsl(var(--chart-3))',     // Amarelo
+  'Inverno': 'hsl(var(--chart-1))',    // Azul
+  'Primavera': 'hsl(var(--chart-2))', // Verde
+};
+
 function AnalysisPageContent() {
   const [data, setData] = useState<EnergyData[] | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedYearIndex, setSelectedYearIndex] = useState<number>(0);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -33,9 +41,37 @@ function AnalysisPageContent() {
       setLoading(false);
     }
   }, []);
+
+  const { seasonalData, years } = useMemo(() => {
+    if (!data) return { seasonalData: {}, years: [] };
+
+    const processedData = data.reduce<SeasonalData>((acc, item) => {
+      const [month, year] = item.mesAno.split('/');
+      if (!year) return acc;
+
+      const season = getSeason(item.mesAno);
+      if (!acc[year]) {
+        acc[year] = {
+          'Verão': { totalConsumption: 0, totalCost: 0, months: 0 },
+          'Outono': { totalConsumption: 0, totalCost: 0, months: 0 },
+          'Inverno': { totalConsumption: 0, totalCost: 0, months: 0 },
+          'Primavera': { totalConsumption: 0, totalCost: 0, months: 0 },
+        };
+      }
+
+      acc[year][season].totalConsumption += item.consumoAtivoKwh;
+      acc[year][season].totalCost += item.totalFatura;
+      acc[year][season].months += 1;
+
+      return acc;
+    }, {});
+    
+    const sortedYears = Object.keys(processedData).sort((a, b) => parseInt(b) - parseInt(a));
+    return { seasonalData: processedData, years: sortedYears };
+  }, [data]);
   
   if (loading) {
-    return <div className="text-center">Carregando dados...</div>;
+    return <div className="text-center p-8">Carregando dados...</div>;
   }
 
   if (!data) {
@@ -49,41 +85,27 @@ function AnalysisPageContent() {
     );
   }
 
-  const seasonalData = data.reduce<SeasonalData>((acc, item) => {
-    const [month, year] = item.mesAno.split('/');
-    if (!year) return acc;
+  const handlePreviousYear = () => {
+    setSelectedYearIndex((prevIndex) => Math.min(years.length - 1, prevIndex + 1));
+  };
 
-    const season = getSeason(item.mesAno);
-    if (!acc[year]) {
-      acc[year] = {
-        'Verão': { totalConsumption: 0, totalCost: 0, months: 0 },
-        'Outono': { totalConsumption: 0, totalCost: 0, months: 0 },
-        'Inverno': { totalConsumption: 0, totalCost: 0, months: 0 },
-        'Primavera': { totalConsumption: 0, totalCost: 0, months: 0 },
-      };
-    }
+  const handleNextYear = () => {
+    setSelectedYearIndex((prevIndex) => Math.max(0, prevIndex - 1));
+  };
 
-    acc[year][season].totalConsumption += item.consumoAtivoKwh;
-    acc[year][season].totalCost += item.totalFatura;
-    acc[year][season].months += 1;
-
-    return acc;
-  }, {});
-
-  const years = Object.keys(seasonalData).sort().reverse();
-
-  const chartData = Object.entries(seasonalData).flatMap(([year, seasons]) => {
-    return Object.entries(seasons).map(([season, values]) => ({
-      name: `${season.substring(0,3)}/${year.slice(-2)}`,
-      Consumo: values.totalConsumption,
-      Custo: values.totalCost,
-    }));
-  });
+  const selectedYear = years[selectedYearIndex];
+  const yearData = seasonalData[selectedYear] || {};
+  
+  const chartData = Object.entries(yearData).map(([season, values]) => ({
+    name: season,
+    Consumo: values.totalConsumption,
+    Custo: values.totalCost,
+  }));
 
   return (
     <main className="flex min-h-screen flex-col items-center bg-background text-foreground p-4 sm:p-8">
       <div className="w-full max-w-7xl mx-auto">
-        <header className="mb-8 flex justify-between items-center">
+        <header className="mb-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <div>
             <h1 className="text-4xl font-bold text-primary font-headline">Análise Sazonal</h1>
             <p className="text-muted-foreground mt-2">Compare o consumo e o custo de energia por estação do ano.</p>
@@ -96,61 +118,82 @@ function AnalysisPageContent() {
           </Link>
         </header>
 
+         <div className="flex flex-col items-center justify-center gap-4 mb-8">
+            <div className="flex items-center justify-center gap-4">
+                <Button variant="outline" size="icon" onClick={handlePreviousYear} disabled={selectedYearIndex === years.length - 1}>
+                    <ChevronLeft className="h-4 w-4" />
+                    <span className="sr-only">Ano Anterior</span>
+                </Button>
+                <div className="text-xl font-semibold text-center w-24">
+                    Ano {selectedYear}
+                </div>
+                <Button variant="outline" size="icon" onClick={handleNextYear} disabled={selectedYearIndex === 0}>
+                    <ChevronRight className="h-4 w-4" />
+                    <span className="sr-only">Próximo Ano</span>
+                </Button>
+            </div>
+        </div>
+
+
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle>Consumo Sazonal (kWh)</CardTitle>
-            <CardDescription>Visualização do consumo total de energia por estação ao longo dos anos.</CardDescription>
+            <CardTitle>Consumo Sazonal (kWh) - {selectedYear}</CardTitle>
+            <CardDescription>Visualização do consumo total de energia por estação.</CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={400}>
-              <BarChart data={chartData}>
+              <BarChart data={chartData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
                 <CartesianGrid vertical={false} />
-                <XAxis dataKey="name" angle={-45} textAnchor="end" height={60} interval={0} />
+                <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip 
                   formatter={(value: number) => `${value.toFixed(0)} kWh`}
                   cursor={{fill: 'hsl(var(--muted))'}}
                 />
                 <Legend />
-                <Bar dataKey="Consumo" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="Consumo" radius={[4, 4, 0, 0]}>
+                   {chartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={seasonColors[entry.name]} />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        {years.map(year => (
-          <Card key={year} className="mb-6">
-            <CardHeader>
-              <CardTitle>Resumo do Ano: {year}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Estação</TableHead>
-                    <TableHead className="text-right">Consumo Total (kWh)</TableHead>
-                    <TableHead className="text-right">Custo Total (R$)</TableHead>
-                    <TableHead className="text-right">Consumo Médio Mensal (kWh)</TableHead>
-                    <TableHead className="text-right">Custo Médio Mensal (R$)</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {Object.entries(seasonalData[year]).map(([season, values]) => (
-                    values.months > 0 && (
-                      <TableRow key={season}>
-                        <TableCell className="font-medium">{season}</TableCell>
-                        <TableCell className="text-right">{values.totalConsumption.toFixed(2)}</TableCell>
-                        <TableCell className="text-right">{new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(values.totalCost)}</TableCell>
-                        <TableCell className="text-right">{(values.totalConsumption / values.months).toFixed(2)}</TableCell>
-                        <TableCell className="text-right">{new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(values.totalCost / values.months)}</TableCell>
-                      </TableRow>
-                    )
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        ))}
+        
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Resumo do Ano: {selectedYear}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Estação</TableHead>
+                  <TableHead className="text-right">Consumo Total (kWh)</TableHead>
+                  <TableHead className="text-right">Custo Total (R$)</TableHead>
+                  <TableHead className="text-right">Consumo Médio Mensal (kWh)</TableHead>
+                  <TableHead className="text-right">Custo Médio Mensal (R$)</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {Object.entries(yearData).map(([season, values]) => (
+                  values.months > 0 && (
+                    <TableRow key={season}>
+                      <TableCell className="font-medium">{season}</TableCell>
+                      <TableCell className="text-right">{values.totalConsumption.toFixed(2)}</TableCell>
+                      <TableCell className="text-right">{new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(values.totalCost)}</TableCell>
+                      <TableCell className="text-right">{(values.totalConsumption / values.months).toFixed(2)}</TableCell>
+                      <TableCell className="text-right">{new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(values.totalCost / values.months)}</TableCell>
+                    </TableRow>
+                  )
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+        
 
         <Card>
             <CardHeader>
@@ -173,7 +216,7 @@ function AnalysisPageContent() {
 
 export default function AnalysisPage() {
     return (
-        <Suspense fallback={<div>Carregando...</div>}>
+        <Suspense fallback={<div className="text-center p-8">Carregando...</div>}>
             <AnalysisPageContent />
         </Suspense>
     )
