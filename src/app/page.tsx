@@ -25,8 +25,8 @@ export default function Home() {
       <main className="flex min-h-screen flex-col items-center bg-background text-foreground p-4 sm:p-8">
         <div className="w-full max-w-7xl mx-auto">
           <header className="mb-8 text-center sm:text-left">
-            <h1 className="text-4xl font-bold text-primary font-headline">Energy Insights</h1>
-            <p className="text-muted-foreground mt-2">Monitor and analyze your home energy consumption.</p>
+            <h1 className="text-4xl font-bold text-primary font-headline">Análise de Energia</h1>
+            <p className="text-muted-foreground mt-2">Monitore e analise o consumo de energia da sua casa.</p>
           </header>
           {energyData ? (
             <Dashboard data={energyData} fileName={fileName} onReset={handleReset} />

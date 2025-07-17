@@ -10,11 +10,11 @@ interface EnergyChartProps {
 
 const chartConfig = {
   consumption: {
-    label: "Consumption (kWh)",
+    label: "Consumo (kWh)",
     color: "hsl(var(--primary))",
   },
   cost: {
-    label: "Cost (R$)",
+    label: "Custo (R$)",
     color: "hsl(var(--accent))",
   }
 } satisfies ChartConfig;
@@ -51,13 +51,13 @@ export default function EnergyChart({ data }: EnergyChartProps) {
         <YAxis
           yAxisId="left"
           stroke="var(--color-consumption)"
-          label={{ value: 'Consumption (kWh)', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' }, offset: -15 }}
+          label={{ value: 'Consumo (kWh)', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' }, offset: -15 }}
         />
         <YAxis
           yAxisId="right"
           orientation="right"
           stroke="var(--color-cost)"
-          label={{ value: 'Cost (R$)', angle: 90, position: 'insideRight', style: { textAnchor: 'middle' }, offset: -15 }}
+          label={{ value: 'Custo (R$)', angle: 90, position: 'insideRight', style: { textAnchor: 'middle' }, offset: -15 }}
         />
         <Tooltip content={<ChartTooltipContent />} />
         <Legend />

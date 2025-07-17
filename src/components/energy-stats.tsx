@@ -28,62 +28,62 @@ export default function EnergyStats({ data }: EnergyStatsProps) {
     costChange = ((latestMonth.totalFatura - previousMonth.totalFatura) / previousMonth.totalFatura) * 100;
   }
   
-  const formatNumber = (num: number) => isNaN(num) ? 'N/A' : Math.round(num).toLocaleString();
+  const formatNumber = (num: number) => isNaN(num) ? 'N/A' : Math.round(num).toLocaleString('pt-BR');
   const formatCurrency = (num: number) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(num);
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Consumption</CardTitle>
+          <CardTitle className="text-sm font-medium">Consumo Total</CardTitle>
           <Zap className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{formatNumber(totalConsumption)} kWh</div>
-          <p className="text-xs text-muted-foreground">Across {data.length} months</p>
+          <p className="text-xs text-muted-foreground">Em {data.length} meses</p>
         </CardContent>
       </Card>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Avg. Monthly Consumption</CardTitle>
+          <CardTitle className="text-sm font-medium">Consumo Médio Mensal</CardTitle>
           <BarChart className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{formatNumber(avgMonthlyConsumption)} kWh</div>
-          <p className="text-xs text-muted-foreground">Average over the period</p>
+          <p className="text-xs text-muted-foreground">Média durante o período</p>
         </CardContent>
       </Card>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Avg. Daily Consumption</CardTitle>
+          <CardTitle className="text-sm font-medium">Consumo Médio Diário</CardTitle>
           <TrendingUp className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{formatNumber(avgDailyConsumption)} kWh/day</div>
-          <p className="text-xs text-muted-foreground">Average daily usage</p>
+          <div className="text-2xl font-bold">{formatNumber(avgDailyConsumption)} kWh/dia</div>
+          <p className="text-xs text-muted-foreground">Uso médio diário</p>
         </CardContent>
       </Card>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Consumption MoM</CardTitle>
+          <CardTitle className="text-sm font-medium">Consumo Mês a Mês</CardTitle>
           {consumptionChange >= 0 ? <ArrowUp className="h-4 w-4 text-destructive" /> : <ArrowDown className="h-4 w-4 text-success" />}
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{formatNumber(latestMonth.consumoAtivoKwh)} kWh</div>
           {previousMonth && <p className={`text-xs ${consumptionChange >= 0 ? 'text-destructive' : 'text-success'}`}>
-            {consumptionChange.toFixed(1)}% from last month
+            {consumptionChange.toFixed(1).replace('.',',')}% do último mês
           </p>}
         </CardContent>
       </Card>
        <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Cost MoM</CardTitle>
+          <CardTitle className="text-sm font-medium">Custo Mês a Mês</CardTitle>
           {costChange >= 0 ? <ArrowUp className="h-4 w-4 text-destructive" /> : <ArrowDown className="h-4 w-4 text-success" />}
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{formatCurrency(latestMonth.totalFatura)}</div>
           {previousMonth && <p className={`text-xs ${costChange >= 0 ? 'text-destructive' : 'text-success'}`}>
-            {costChange.toFixed(1)}% from last month
+            {costChange.toFixed(1).replace('.',',')}% do último mês
           </p>}
         </CardContent>
       </Card>

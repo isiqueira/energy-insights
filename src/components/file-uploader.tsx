@@ -45,13 +45,11 @@ export default function FileUploader({ onDataLoaded }: FileUploaderProps) {
       return dateValue;
     }
     if (typeof dateValue === 'number') {
-      // Handle Excel's date serial number (days since 1900-01-01)
       return new Date(Math.round((dateValue - 25569) * 86400 * 1000));
     }
     if (typeof dateValue === 'string') {
         const parts = dateValue.split('/');
         if (parts.length === 3) {
-          // DD/MM/YYYY
           return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
         }
     }
@@ -61,8 +59,8 @@ export default function FileUploader({ onDataLoaded }: FileUploaderProps) {
   const processFile = () => {
     if (!file) {
       toast({
-        title: 'No file selected',
-        description: 'Please select an Excel file to upload.',
+        title: 'Nenhum arquivo selecionado',
+        description: 'Por favor, selecione um arquivo Excel para carregar.',
         variant: 'destructive',
       });
       return;
@@ -106,8 +104,8 @@ export default function FileUploader({ onDataLoaded }: FileUploaderProps) {
       } catch (error) {
         console.error('Error processing file:', error);
         toast({
-          title: 'Error Processing File',
-          description: 'Please check the file format and column headers.',
+          title: 'Erro ao Processar o Arquivo',
+          description: 'Por favor, verifique o formato do arquivo e os cabeçalhos das colunas.',
           variant: 'destructive',
         });
       } finally {
@@ -118,8 +116,8 @@ export default function FileUploader({ onDataLoaded }: FileUploaderProps) {
     reader.onerror = (error) => {
       console.error('File reading error:', error);
       toast({
-        title: 'File Read Error',
-        description: 'Could not read the selected file.',
+        title: 'Erro de Leitura do Arquivo',
+        description: 'Não foi possível ler o arquivo selecionado.',
         variant: 'destructive',
       });
       setIsLoading(false);
@@ -131,20 +129,20 @@ export default function FileUploader({ onDataLoaded }: FileUploaderProps) {
   return (
     <Card className="w-full max-w-lg">
       <CardHeader>
-        <CardTitle>Upload Your Energy Data</CardTitle>
+        <CardTitle>Carregue Seus Dados de Energia</CardTitle>
         <CardDescription>
-          Import your energy consumption history from an Excel file (.xls, .xlsx).
+          Importe seu histórico de consumo de energia de um arquivo Excel (.xls, .xlsx).
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid w-full items-center gap-4">
           <div className="flex flex-col space-y-1.5">
-            <Label htmlFor="energy-data-file">Excel File</Label>
+            <Label htmlFor="energy-data-file">Arquivo Excel</Label>
             <Input id="energy-data-file" type="file" accept=".xlsx, .xls" onChange={handleFileChange} />
           </div>
           <Button onClick={processFile} disabled={isLoading || !file} size="lg">
             <UploadCloud className="mr-2 h-4 w-4" />
-            {isLoading ? 'Processing...' : 'Upload and Analyze'}
+            {isLoading ? 'Processando...' : 'Carregar e Analisar'}
           </Button>
         </div>
       </CardContent>

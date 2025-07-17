@@ -31,7 +31,7 @@ export default function AnomalyDetector({ data }: AnomalyDetectorProps) {
       setAnomalies(result);
     } catch (e) {
       console.error('Anomaly detection failed:', e);
-      setError('An error occurred while analyzing the data. Please try again.');
+      setError('Ocorreu um erro ao analisar os dados. Por favor, tente novamente.');
     } finally {
       setIsLoading(false);
     }
@@ -46,9 +46,9 @@ export default function AnomalyDetector({ data }: AnomalyDetectorProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>AI-Powered Anomaly Detection</CardTitle>
+        <CardTitle>Detecção de Anomalias com IA</CardTitle>
         <CardDescription>
-          Our AI analyzes your consumption patterns to find unusual activity and offers potential explanations.
+          Nossa IA analisa seus padrões de consumo para encontrar atividades incomuns e oferecer explicações potenciais.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -62,24 +62,24 @@ export default function AnomalyDetector({ data }: AnomalyDetectorProps) {
         {error && (
             <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Analysis Failed</AlertTitle>
+                <AlertTitle>Falha na Análise</AlertTitle>
                 <AlertDescription className="flex items-center justify-between">
                     <span>{error}</span>
-                    <Button variant="link" onClick={runAnalysis}>Try again</Button>
+                    <Button variant="link" onClick={runAnalysis}>Tentar novamente</Button>
                 </AlertDescription>
             </Alert>
         )}
 
         {anomalies && anomalies.length > 0 && (
           <div className="space-y-4">
-            <h3 className="font-semibold">Detected Anomalies:</h3>
+            <h3 className="font-semibold">Anomalias Detectadas:</h3>
             {anomalies.map((anomaly, index) => (
               <Alert key={index} className="bg-primary/5 border-primary/20">
                 <Lightbulb className="h-4 w-4 text-primary" />
-                <AlertTitle className="text-primary">Anomaly Detected on {anomaly.date}</AlertTitle>
+                <AlertTitle className="text-primary">Anomalia Detectada em {anomaly.date}</AlertTitle>
                 <AlertDescription>
-                  <p><span className="font-semibold">Consumption:</span> {anomaly.consumption.toFixed(2)} kWh</p>
-                  <p className="mt-2"><span className="font-semibold">Potential Reasons:</span> {anomaly.potentialReasons}</p>
+                  <p><span className="font-semibold">Consumo:</span> {anomaly.consumption.toFixed(2)} kWh</p>
+                  <p className="mt-2"><span className="font-semibold">Razões Potenciais:</span> {anomaly.potentialReasons}</p>
                 </AlertDescription>
               </Alert>
             ))}
@@ -89,9 +89,9 @@ export default function AnomalyDetector({ data }: AnomalyDetectorProps) {
         {anomalies && anomalies.length === 0 && !isLoading && !error && (
             <Alert>
                 <AlertCircle className="h-4 w-4" />
-                <AlertTitle>No Anomalies Found</AlertTitle>
+                <AlertTitle>Nenhuma Anomalia Encontrada</AlertTitle>
                 <AlertDescription>
-                    Your energy consumption pattern appears to be stable based on the provided data.
+                    Seu padrão de consumo de energia parece estável com base nos dados fornecidos.
                 </AlertDescription>
             </Alert>
         )}

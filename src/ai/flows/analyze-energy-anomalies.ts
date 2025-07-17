@@ -38,16 +38,16 @@ const prompt = ai.definePrompt({
   name: 'analyzeEnergyAnomaliesPrompt',
   input: {schema: AnalyzeEnergyAnomaliesInputSchema},
   output: {schema: AnalyzeEnergyAnomaliesOutputSchema},
-  prompt: `You are an expert energy analyst. You are provided with historical energy consumption data.
+  prompt: `Você é um analista de energia especialista. Você recebe dados históricos de consumo de energia.
 
-Your task is to identify anomalies in the energy consumption patterns and provide potential reasons for these anomalies.
+Sua tarefa é identificar anomalias nos padrões de consumo de energia e fornecer possíveis razões para essas anomalias.
 
-Input data:
+Dados de entrada:
 {{#each this}}
-- Date: {{date}}, Consumption: {{consumption}} kWh
+- Data: {{date}}, Consumo: {{consumption}} kWh
 {{/each}}
 
-Analyze the data and identify any anomalies (e.g., sudden spikes or drops in consumption). For each anomaly, provide the date, consumption value, and potential reasons for the anomaly.  Format the output as a JSON array.
+Analise os dados e identifique quaisquer anomalias (por exemplo, picos ou quedas repentinas no consumo). Para cada anomalia, forneça a data, o valor do consumo e as possíveis razões para a anomalia. Formate a saída como um array JSON em português.
 `,
 });
 

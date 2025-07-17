@@ -27,7 +27,7 @@ import { ArrowUpDown } from 'lucide-react';
 export const columns: ColumnDef<EnergyData>[] = [
   {
     accessorKey: 'mesAno',
-    header: 'Month/Year',
+    header: 'Mês/Ano',
   },
   {
     accessorKey: 'medidor',
@@ -41,7 +41,7 @@ export const columns: ColumnDef<EnergyData>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Reading Date
+          Data da Leitura
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -56,7 +56,7 @@ export const columns: ColumnDef<EnergyData>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Consumption (kWh)
+          Consumo (kWh)
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -71,7 +71,7 @@ export const columns: ColumnDef<EnergyData>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Total Bill (R$)
+          Fatura Total (R$)
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -87,12 +87,12 @@ export const columns: ColumnDef<EnergyData>[] = [
   },
   {
     accessorKey: 'mediaAtivaKwhDia',
-    header: () => <div className="text-right">Avg. kWh/day</div>,
+    header: () => <div className="text-right">Média kWh/dia</div>,
     cell: ({ row }) => <div className="text-right">{row.original.mediaAtivaKwhDia.toFixed(2)}</div>
   },
   {
     accessorKey: 'numDiasFaturamento',
-    header: 'Billing Days'
+    header: 'Dias de Faturamento'
   }
 ];
 
@@ -119,7 +119,7 @@ export default function EnergyDataTable({ data }: { data: EnergyData[] }) {
     <div className="w-full">
       <div className="flex items-center gap-4 py-4">
         <Input
-          placeholder="Filter by Month/Year..."
+          placeholder="Filtrar por Mês/Ano..."
           value={(table.getColumn('mesAno')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
             table.getColumn('mesAno')?.setFilterValue(event.target.value)
@@ -127,7 +127,7 @@ export default function EnergyDataTable({ data }: { data: EnergyData[] }) {
           className="max-w-sm"
         />
         <Input
-          placeholder="Filter by Medidor..."
+          placeholder="Filtrar por Medidor..."
           value={(table.getColumn('medidor')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
             table.getColumn('medidor')?.setFilterValue(event.target.value)
@@ -178,7 +178,7 @@ export default function EnergyDataTable({ data }: { data: EnergyData[] }) {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  Nenhum resultado.
                 </TableCell>
               </TableRow>
             )}
@@ -187,7 +187,7 @@ export default function EnergyDataTable({ data }: { data: EnergyData[] }) {
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredRowModel().rows.length} of {data.length} row(s) showing.
+          {table.getFilteredRowModel().rows.length} de {data.length} linha(s) exibidas.
         </div>
         <div className="space-x-2">
             <Button
@@ -196,7 +196,7 @@ export default function EnergyDataTable({ data }: { data: EnergyData[] }) {
                 onClick={() => table.previousPage()}
                 disabled={!table.getCanPreviousPage()}
             >
-                Previous
+                Anterior
             </Button>
             <Button
                 variant="outline"
@@ -204,7 +204,7 @@ export default function EnergyDataTable({ data }: { data: EnergyData[] }) {
                 onClick={() => table.nextPage()}
                 disabled={!table.getCanNextPage()}
             >
-                Next
+                Próximo
             </Button>
         </div>
       </div>

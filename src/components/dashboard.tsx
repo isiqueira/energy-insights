@@ -21,7 +21,7 @@ export default function Dashboard({ data, fileName, onReset }: DashboardProps) {
     <div className="space-y-8">
        <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
         <div>
-          <h2 className="text-2xl font-bold">Consumption Dashboard</h2>
+          <h2 className="text-2xl font-bold">Painel de Consumo</h2>
           <div className="flex items-center text-muted-foreground mt-1">
             <File className="mr-2 h-4 w-4" />
             <span>{fileName}</span>
@@ -29,7 +29,7 @@ export default function Dashboard({ data, fileName, onReset }: DashboardProps) {
         </div>
         <Button onClick={onReset} variant="outline" className="w-full sm:w-auto">
           <RefreshCw className="mr-2 h-4 w-4" />
-          Load Another File
+          Carregar Outro Arquivo
         </Button>
       </div>
 
@@ -37,15 +37,15 @@ export default function Dashboard({ data, fileName, onReset }: DashboardProps) {
       
       <Tabs defaultValue="overview" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="data">Data Table</TabsTrigger>
-          <TabsTrigger value="anomalies">Anomaly Detection</TabsTrigger>
+          <TabsTrigger value="overview">Visão Geral</TabsTrigger>
+          <TabsTrigger value="data">Tabela de Dados</TabsTrigger>
+          <TabsTrigger value="anomalies">Detecção de Anomalias</TabsTrigger>
         </TabsList>
         <TabsContent value="overview">
           <Card className="mt-4">
             <CardHeader>
-              <CardTitle>Consumption & Cost Over Time</CardTitle>
-              <CardDescription>A combined view of your monthly energy consumption (kWh) and total bill amount (R$).</CardDescription>
+              <CardTitle>Consumo e Custo ao Longo do Tempo</CardTitle>
+              <CardDescription>Uma visão combinada do seu consumo mensal de energia (kWh) e o valor total da fatura (R$).</CardDescription>
             </CardHeader>
             <CardContent>
               <EnergyChart data={data} />
@@ -55,8 +55,8 @@ export default function Dashboard({ data, fileName, onReset }: DashboardProps) {
         <TabsContent value="data">
           <Card className="mt-4">
             <CardHeader>
-              <CardTitle>Detailed Energy Data</CardTitle>
-              <CardDescription>Sort and filter your complete consumption history.</CardDescription>
+              <CardTitle>Dados Detalhados de Energia</CardTitle>
+              <CardDescription>Ordene e filtre seu histórico completo de consumo.</CardDescription>
             </CardHeader>
             <CardContent>
               <EnergyDataTable data={data} />
