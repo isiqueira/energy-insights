@@ -39,16 +39,18 @@ export const columns: ColumnDef<EnergyData>[] = [
     accessorKey: 'consumoAtivoKwh',
     header: ({ column }) => {
       return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Consumo (kWh)
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+        <div className="text-center">
+            <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+            >
+            Consumo (kWh)
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+        </div>
       );
     },
-    cell: ({ row }) => <div className="text-right">{row.original.consumoAtivoKwh.toFixed(2)}</div>,
+    cell: ({ row }) => <div className="text-center">{row.original.consumoAtivoKwh.toFixed(2)}</div>,
   },
   {
       id: 'monthVariation',
