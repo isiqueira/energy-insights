@@ -24,6 +24,12 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { ArrowUpDown, ArrowDown, ArrowUp } from 'lucide-react';
 
+const formatCurrency = (amount: number) => new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL"
+}).format(amount);
+
+
 export const columns: ColumnDef<EnergyData>[] = [
   {
     accessorKey: 'mesAno',
@@ -88,10 +94,7 @@ export const columns: ColumnDef<EnergyData>[] = [
     },
     cell: ({ row }) => {
         const amount = parseFloat(String(row.original.totalFatura))
-        const formatted = new Intl.NumberFormat("pt-BR", {
-            style: "currency",
-            currency: "BRL"
-        }).format(amount)
+        const formatted = formatCurrency(amount);
         return <div className="text-right font-medium">{formatted}</div>
     }
   },
@@ -108,33 +111,45 @@ export const columns: ColumnDef<EnergyData>[] = [
 
       const custoKwh = totalFatura / consumoKwh;
       
-      const formatted = new Intl.NumberFormat("pt-BR", {
-          style: "currency",
-          currency: "BRL"
-      }).format(custoKwh);
+      const formatted = formatCurrency(custoKwh);
 
       return <div className="text-right">{formatted}</div>;
+    },
+  },
+  {
+    id: 'consumoAnoAnterior',
+    header: () => <div className="text-right">Consumo (kWh) Ano Anterior</div>,
+    cell: ({ row, table }) => {
+      const allData = table.options.data;
+      const [month, year] = row.original.mesAno.split('/');
+      const prevYearMesAno = `${month}/${parseInt(year) - 1}`;
+      const prevYearData = allData.find(d => d.mesAno === prevYearMesAno);
+
+      if (!prevYearData) {
+        return <div className="text-right text-muted-foreground">-</div>;
+      }
+      return <div className="text-right">{prevYearData.consumoAtivoKwh.toFixed(2)}</div>;
+    },
+  },
+  {
+    id: 'faturaAnoAnterior',
+    header: () => <div className="text-right">Fatura Total (Ano Anterior)</div>,
+    cell: ({ row, table }) => {
+      const allData = table.options.data;
+      const [month, year] = row.original.mesAno.split('/');
+      const prevYearMesAno = `${month}/${parseInt(year) - 1}`;
+      const prevYearData = allData.find(d => d.mesAno === prevYearMesAno);
+
+      if (!prevYearData) {
+        return <div className="text-right text-muted-foreground">-</div>;
+      }
+      return <div className="text-right font-medium">{formatCurrency(prevYearData.totalFatura)}</div>;
     },
   },
   {
     accessorKey: 'mediaAtivaKwhDia',
     header: () => <div className="text-right">Média kWh/dia</div>,
     cell: ({ row }) => <div className="text-right">{row.original.mediaAtivaKwhDia.toFixed(2)}</div>
-  },
-  {
-    accessorKey: 'leituraDate',
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Data da Leitura
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => new Date(row.original.leituraDate).toLocaleDateString(),
   },
 ];
 
