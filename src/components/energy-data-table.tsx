@@ -22,7 +22,7 @@ import {
 } from '@tanstack/react-table';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { ArrowUpDown, ArrowDown, ArrowUp } from 'lucide-react';
+import { ArrowUpDown, ArrowDown, ArrowUp, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const formatCurrency = (amount: number) => new Intl.NumberFormat("pt-BR", {
     style: "currency",
@@ -34,6 +34,7 @@ export const columns: ColumnDef<EnergyData>[] = [
   {
     accessorKey: 'mesAno',
     header: 'Mês/Ano',
+    cell: ({ row }) => <div className="font-medium">{row.original.mesAno}</div>,
   },
   {
     accessorKey: 'consumoAtivoKwh',
@@ -188,11 +189,11 @@ export default function EnergyDataTable({ data }: { data: EnergyData[] }) {
           className="max-w-sm"
         />
       </div>
-      <div className="rounded-md border">
+      <div>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} className="border-b hover:bg-transparent">
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id}>
@@ -216,7 +217,7 @@ export default function EnergyDataTable({ data }: { data: EnergyData[] }) {
                   data-state={row.getIsSelected() && 'selected'}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className="py-3">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -238,26 +239,31 @@ export default function EnergyDataTable({ data }: { data: EnergyData[] }) {
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
+      <div className="flex items-center justify-between space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredRowModel().rows.length} de {data.length} linha(s) exibidas.
         </div>
-        <div className="space-x-2">
+        <div className="flex items-center space-x-2">
             <Button
                 variant="outline"
-                size="sm"
+                size="icon"
+                className="h-8 w-8"
                 onClick={() => table.previousPage()}
                 disabled={!table.getCanPreviousPage()}
             >
-                Anterior
+                <ChevronLeft className="h-4 w-4" />
             </Button>
+            <span className="text-sm font-medium">
+              {table.getState().pagination.pageIndex + 1} de {table.getPageCount()}
+            </span>
             <Button
                 variant="outline"
-                size="sm"
+                size="icon"
+                className="h-8 w-8"
                 onClick={() => table.nextPage()}
                 disabled={!table.getCanNextPage()}
             >
-                Próximo
+                <ChevronRight className="h-4 w-4" />
             </Button>
         </div>
       </div>
