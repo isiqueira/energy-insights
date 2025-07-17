@@ -1,8 +1,8 @@
 'use client';
 
 const seasons = [
-  { name: 'Verão', color: 'hsl(var(--chart-5))' },
-  { name: 'Outono', color: 'hsl(var(--chart-3))' },
+  { name: 'Verão', color: 'hsl(var(--chart-3))' },
+  { name: 'Outono', color: 'hsl(var(--chart-5))' },
   { name: 'Inverno', color: 'hsl(var(--chart-1))' },
   { name: 'Primavera', color: 'hsl(var(--chart-2))' },
 ];

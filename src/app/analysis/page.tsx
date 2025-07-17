@@ -22,8 +22,8 @@ type SeasonalData = {
 };
 
 const seasonColors: { [key: string]: string } = {
-  'Verão': 'hsl(var(--chart-5))',      // Laranja
-  'Outono': 'hsl(var(--chart-3))',     // Amarelo
+  'Verão': 'hsl(var(--chart-3))',      // Amarelo
+  'Outono': 'hsl(var(--chart-5))',     // Laranja
   'Inverno': 'hsl(var(--chart-1))',    // Azul
   'Primavera': 'hsl(var(--chart-2))', // Verde
 };
