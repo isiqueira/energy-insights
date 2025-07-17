@@ -13,11 +13,17 @@ export default function Home() {
   const handleDataLoaded = (data: EnergyData[], name: string) => {
     setEnergyData(data);
     setFileName(name);
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('energyData', JSON.stringify(data));
+    }
   };
 
   const handleReset = () => {
     setEnergyData(null);
     setFileName('');
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('energyData');
+    }
   };
 
   return (

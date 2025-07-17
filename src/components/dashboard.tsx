@@ -44,7 +44,7 @@ export default function Dashboard({ data, fileName, onReset }: DashboardProps) {
           </div>
         </div>
         <div className='flex flex-col sm:flex-row gap-2'>
-          <Link href={{ pathname: '/analysis', query: { data: JSON.stringify(data) } }} passHref>
+          <Link href="/analysis" passHref>
             <Button variant="outline" className="w-full sm:w-auto">
               <BarChart3 className="mr-2 h-4 w-4" />
               Análise Sazonal

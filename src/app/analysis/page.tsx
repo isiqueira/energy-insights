@@ -1,8 +1,7 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
 import { type EnergyData } from '@/types/energy';
 import { getSeason } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,21 +21,33 @@ type SeasonalData = {
 };
 
 function AnalysisPageContent() {
-  const searchParams = useSearchParams();
-  const dataString = searchParams.get('data');
+  const [data, setData] = useState<EnergyData[] | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const dataString = sessionStorage.getItem('energyData');
+      if (dataString) {
+        setData(JSON.parse(dataString));
+      }
+      setLoading(false);
+    }
+  }, []);
   
-  if (!dataString) {
+  if (loading) {
+    return <div className="text-center">Carregando dados...</div>;
+  }
+
+  if (!data) {
     return (
       <div className="text-center">
-        <p>Dados não encontrados.</p>
+        <p>Dados não encontrados. Por favor, carregue um arquivo na página inicial primeiro.</p>
         <Link href="/">
           <Button className="mt-4">Voltar para o Início</Button>
         </Link>
       </div>
     );
   }
-
-  const data: EnergyData[] = JSON.parse(dataString);
 
   const seasonalData = data.reduce<SeasonalData>((acc, item) => {
     const [month, year] = item.mesAno.split('/');
