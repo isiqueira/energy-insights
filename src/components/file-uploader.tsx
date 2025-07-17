@@ -105,7 +105,7 @@ export default function FileUploader({ onDataLoaded }: FileUploaderProps) {
 
         parsedData.sort((a, b) => parseMesAno(a.mesAno).getTime() - parseMesAno(b.mesAno).getTime());
         
-        onDataLoaded(parsedData, file.name);
+        onDataLoaded(parsedData.reverse(), file.name);
       } catch (error) {
         console.error('Error processing file:', error);
         toast({

@@ -80,12 +80,12 @@ export const columns: ColumnDef<EnergyData>[] = [
         const rowIndex = row.index;
         const allData = table.options.data;
   
-        if (rowIndex === 0) {
+        if (rowIndex >= allData.length -1) {
           return <div className="text-right text-muted-foreground">-</div>;
         }
   
         const currentConsumption = row.original.consumoAtivoKwh;
-        const previousConsumption = allData[rowIndex - 1].consumoAtivoKwh;
+        const previousConsumption = allData[rowIndex + 1].consumoAtivoKwh;
   
         if (previousConsumption === 0) {
           return <div className="text-right text-muted-foreground">N/A</div>;
