@@ -47,8 +47,10 @@ function AnalysisPageContent() {
     if (!data) return { seasonalData: {}, years: [] };
 
     const processedData = data.reduce<SeasonalData>((acc, item) => {
-      const [month, year] = item.mesAno.split('/');
-      if (!year) return acc;
+      const [month, yearStr] = item.mesAno.split('/');
+      if (!yearStr) return acc;
+      
+      const year = yearStr.length === 2 ? `20${yearStr}` : yearStr;
 
       const season = getSeason(item.mesAno);
       if (!acc[year]) {
