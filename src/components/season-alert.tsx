@@ -1,7 +1,8 @@
 'use client';
 
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Sun, CloudSun, Snowflake, Leaf } from 'lucide-react';
+import { Sun, Snowflake, Leaf } from 'lucide-react';
+import { CloudSun } from 'lucide-react';
+
 
 interface SeasonAlertProps {
     mesAno: string;
@@ -48,11 +49,9 @@ export default function SeasonAlert({ mesAno }: SeasonAlertProps) {
     const season = getSeason(mesAno);
 
     return (
-        <Alert className={`max-w-xs mx-auto ${season.colorClass}`}>
-            <div className="flex items-center gap-2">
-                {season.icon}
-                <span className="font-semibold">{season.name}</span>
-            </div>
-        </Alert>
+        <div className={`flex items-center justify-center gap-2 rounded-lg border py-2 px-4 max-w-xs mx-auto ${season.colorClass}`}>
+            {season.icon}
+            <span className="font-semibold">{season.name}</span>
+        </div>
     );
 }
