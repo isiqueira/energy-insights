@@ -84,12 +84,14 @@ export const columns: ColumnDef<EnergyData>[] = [
         const sortedRows = table.getSortedRowModel().rows;
         const currentIndex = sortedRows.findIndex(sortedRow => sortedRow.original.isoDate === row.original.isoDate);
   
-        if (currentIndex <= 0) { // Alterado de >= sortedRows.length -1 para <= 0 pois a ordem é decrescente
+        // If it's the last row in the sorted array (oldest date), there's no previous month to compare to.
+        if (currentIndex >= sortedRows.length - 1) { 
           return <div className="text-right text-muted-foreground">-</div>;
         }
   
         const currentConsumption = row.original.consumoAtivoKwh;
-        const previousConsumption = sortedRows[currentIndex - 1].original.consumoAtivoKwh;
+        // The previous month is at the next index because the table is sorted descending.
+        const previousConsumption = sortedRows[currentIndex + 1].original.consumoAtivoKwh;
   
         if (previousConsumption === 0) {
           return <div className="text-right text-muted-foreground">N/A</div>;
@@ -182,9 +184,7 @@ export const columns: ColumnDef<EnergyData>[] = [
 ];
 
 export default function EnergyDataTable({ data }: { data: EnergyData[] }) {
-  const [sorting, setSorting] = React.useState<SortingState>([
-    { id: 'isoDate', desc: true }
-  ]);
+  const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
 
   const table = useReactTable({
@@ -204,9 +204,6 @@ export default function EnergyDataTable({ data }: { data: EnergyData[] }) {
         pagination: {
             pageSize: 12,
         },
-        sorting: [
-            { id: 'isoDate', desc: true }
-        ]
     }
   });
 
