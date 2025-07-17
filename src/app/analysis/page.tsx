@@ -34,7 +34,7 @@ function AnalysisPageContent() {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const dataString = sessionStorage.getItem('energyData');
+      const dataString = localStorage.getItem('energyData');
       if (dataString) {
         setData(JSON.parse(dataString));
       }

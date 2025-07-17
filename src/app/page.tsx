@@ -1,20 +1,39 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { type EnergyData } from '@/types/energy';
 import FileUploader from '@/components/file-uploader';
 import Dashboard from '@/components/dashboard';
 import { Toaster } from "@/components/ui/toaster"
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function Home() {
   const [energyData, setEnergyData] = useState<EnergyData[] | null>(null);
   const [fileName, setFileName] = useState<string>('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    try {
+      const dataString = localStorage.getItem('energyData');
+      const nameString = localStorage.getItem('fileName');
+      if (dataString && nameString) {
+        setEnergyData(JSON.parse(dataString));
+        setFileName(nameString);
+      }
+    } catch (error) {
+        console.error("Failed to parse data from localStorage", error);
+        localStorage.removeItem('energyData');
+        localStorage.removeItem('fileName');
+    }
+    setLoading(false);
+  }, []);
 
   const handleDataLoaded = (data: EnergyData[], name: string) => {
     setEnergyData(data);
     setFileName(name);
     if (typeof window !== 'undefined') {
-      sessionStorage.setItem('energyData', JSON.stringify(data));
+      localStorage.setItem('energyData', JSON.stringify(data));
+      localStorage.setItem('fileName', name);
     }
   };
 
@@ -22,9 +41,39 @@ export default function Home() {
     setEnergyData(null);
     setFileName('');
     if (typeof window !== 'undefined') {
-      sessionStorage.removeItem('energyData');
+      localStorage.removeItem('energyData');
+      localStorage.removeItem('fileName');
     }
   };
+
+  const renderContent = () => {
+    if (loading) {
+      return (
+         <div className="w-full max-w-7xl mx-auto space-y-8">
+            <Skeleton className="h-10 w-1/3" />
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6">
+                <Skeleton className="h-24 w-full" />
+                <Skeleton className="h-24 w-full" />
+                <Skeleton className="h-24 w-full" />
+                <Skeleton className="h-24 w-full" />
+                <Skeleton className="h-24 w-full" />
+                <Skeleton className="h-24 w-full" />
+            </div>
+             <Skeleton className="h-96 w-full" />
+         </div>
+      )
+    }
+    
+    if (energyData) {
+        return <Dashboard data={energyData} fileName={fileName} onReset={handleReset} />;
+    }
+    
+    return (
+        <div className="flex justify-center">
+            <FileUploader onDataLoaded={handleDataLoaded} />
+        </div>
+    );
+  }
 
   return (
     <>
@@ -34,13 +83,7 @@ export default function Home() {
             <h1 className="text-4xl font-bold text-primary font-headline">Análise de Energia</h1>
             <p className="text-muted-foreground mt-2">Monitore e analise o consumo de energia da sua casa.</p>
           </header>
-          {energyData ? (
-            <Dashboard data={energyData} fileName={fileName} onReset={handleReset} />
-          ) : (
-            <div className="flex justify-center">
-              <FileUploader onDataLoaded={handleDataLoaded} />
-            </div>
-          )}
+          {renderContent()}
         </div>
       </main>
       <Toaster />
