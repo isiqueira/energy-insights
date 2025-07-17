@@ -40,12 +40,22 @@ export default function FileUploader({ onDataLoaded }: FileUploaderProps) {
     }
   };
 
-  const parseDate = (dateStr: string): Date => {
-    const parts = dateStr.split('/');
-    if (parts.length === 3) {
-      return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+  const parseDate = (dateValue: string | number | Date): Date => {
+    if (dateValue instanceof Date) {
+      return dateValue;
     }
-    return new Date(dateStr);
+    if (typeof dateValue === 'number') {
+      // Handle Excel's date serial number (days since 1900-01-01)
+      return new Date(Math.round((dateValue - 25569) * 86400 * 1000));
+    }
+    if (typeof dateValue === 'string') {
+        const parts = dateValue.split('/');
+        if (parts.length === 3) {
+          // DD/MM/YYYY
+          return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+        }
+    }
+    return new Date(dateValue);
   };
   
   const processFile = () => {
@@ -64,10 +74,10 @@ export default function FileUploader({ onDataLoaded }: FileUploaderProps) {
     reader.onload = (e) => {
       try {
         const data = e.target?.result;
-        const workbook = XLSX.read(data, { type: 'binary' });
+        const workbook = XLSX.read(data, { type: 'binary', cellDates: true });
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
-        const jsonData: any[] = XLSX.utils.sheet_to_json(worksheet);
+        const jsonData: any[] = XLSX.utils.sheet_to_json(worksheet, { raw: false });
 
         const parsedData: EnergyData[] = jsonData.map((row) => {
           const newRow: Partial<EnergyData> = {};
