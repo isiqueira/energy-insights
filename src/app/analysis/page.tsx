@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Home, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Bar, BarChart, CartesianGrid, Cell, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import SeasonLegend from '@/components/season-legend';
 
 type SeasonalData = {
   [year: string]: {
@@ -158,6 +159,7 @@ function AnalysisPageContent() {
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
+             <SeasonLegend />
           </CardContent>
         </Card>
 
