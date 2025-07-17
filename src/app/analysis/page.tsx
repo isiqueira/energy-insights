@@ -22,10 +22,10 @@ type SeasonalData = {
 };
 
 const seasonColors: { [key: string]: string } = {
-  'Verão': 'hsl(var(--chart-3))',      // Amarelo
-  'Outono': 'hsl(var(--chart-5))',     // Laranja
-  'Inverno': 'hsl(var(--chart-1))',    // Azul
-  'Primavera': 'hsl(var(--chart-2))', // Verde
+  'Verão': 'hsl(var(--chart-3))',
+  'Outono': 'hsl(var(--chart-5))',
+  'Inverno': 'hsl(var(--chart-1))',
+  'Primavera': 'hsl(var(--chart-2))',
 };
 
 function AnalysisPageContent() {
@@ -151,15 +151,14 @@ function AnalysisPageContent() {
                   formatter={(value: number) => `${value.toFixed(0)} kWh`}
                   cursor={{fill: 'hsl(var(--muted))'}}
                 />
-                <Legend />
+                <Legend content={<SeasonLegend />} />
                 <Bar dataKey="Consumo" radius={[4, 4, 0, 0]}>
                    {chartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={seasonColors[entry.name]} />
+                    <Cell key={`cell-${index}`} fill={seasonColors[entry.name as keyof typeof seasonColors]} />
                   ))}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
-             <SeasonLegend />
           </CardContent>
         </Card>
 

@@ -22,10 +22,10 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 const seasonColors: { [key: string]: string } = {
-  'Verão': 'hsl(var(--chart-3))',      // Amarelo
-  'Outono': 'hsl(var(--chart-5))',     // Laranja
-  'Inverno': 'hsl(var(--chart-1))',    // Azul
-  'Primavera': 'hsl(var(--chart-2))', // Verde
+  'Verão': 'hsl(var(--chart-3))',
+  'Outono': 'hsl(var(--chart-5))',
+  'Inverno': 'hsl(var(--chart-1))',
+  'Primavera': 'hsl(var(--chart-2))',
 };
 
 export default function EnergyChart({ data }: EnergyChartProps) {
@@ -71,16 +71,15 @@ export default function EnergyChart({ data }: EnergyChartProps) {
             label={{ value: 'Custo (R$)', angle: 90, position: 'insideRight', style: { textAnchor: 'middle' }, offset: -15 }}
           />
           <Tooltip content={<ChartTooltipContent />} />
-          <Legend />
+          <Legend content={<SeasonLegend />} />
           <Bar dataKey="consumption" yAxisId="left" radius={[4, 4, 0, 0]}>
             {chartData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={seasonColors[entry.season]} />
+              <Cell key={`cell-${index}`} fill={seasonColors[entry.season as keyof typeof seasonColors]} />
             ))}
           </Bar>
           <Line type="monotone" dataKey="cost" yAxisId="right" stroke="var(--color-cost)" strokeWidth={2} dot={{ fill: "var(--color-cost)" }} activeDot={{ r: 6 }} />
         </ComposedChart>
       </ChartContainer>
-      <SeasonLegend />
     </>
   );
 }

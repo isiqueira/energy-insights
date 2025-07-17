@@ -9,11 +9,11 @@ const seasons = [
 
 export default function SeasonLegend() {
   return (
-    <div className="flex justify-center items-center gap-6 mt-4 pt-4 border-t">
+    <div className="flex justify-center items-center gap-6 mt-4 pt-4">
       {seasons.map((season) => (
         <div key={season.name} className="flex items-center gap-2">
           <div
-            className="w-4 h-4 rounded-full"
+            className="w-4 h-4 rounded-sm"
             style={{ backgroundColor: season.color }}
           />
           <span className="text-sm text-muted-foreground">{season.name}</span>

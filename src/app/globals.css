@@ -29,11 +29,11 @@ body {
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 215 58.1% 46.7%;
-    --chart-1: 215 58.1% 46.7%;
-    --chart-2: 174 40.2% 51%;
-    --chart-3: 25 95% 53.1%;
+    --chart-1: 215 58.1% 46.7%; /* Inverno - Azul */
+    --chart-2: 130 50% 55%; /* Primavera - Verde */
+    --chart-3: 50 95% 58%; /* Verão - Amarelo */
     --chart-4: 280.7 89.1% 64.1%;
-    --chart-5: 19.1 94.6% 58.4%;
+    --chart-5: 25 85% 55%; /* Outono - Laranja */
     --radius: 0.5rem;
     --sidebar-background: 210 25% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -66,11 +66,11 @@ body {
     --border: 215 27.9% 16.9%;
     --input: 215 27.9% 16.9%;
     --ring: 215 58.1% 46.7%;
-    --chart-1: 215 58.1% 46.7%;
-    --chart-2: 174 40.2% 51%;
-    --chart-3: 25 95% 53.1%;
+    --chart-1: 215 58.1% 46.7%; /* Inverno - Azul */
+    --chart-2: 130 50% 55%; /* Primavera - Verde */
+    --chart-3: 50 95% 58%; /* Verão - Amarelo */
     --chart-4: 280.7 89.1% 64.1%;
-    --chart-5: 19.1 94.6% 58.4%;
+    --chart-5: 25 85% 55%; /* Outono - Laranja */
     --sidebar-background: 224 71.4% 4.1%;
     --sidebar-foreground: 210 20% 98%;
     --sidebar-primary: 215 58.1% 46.7%;
