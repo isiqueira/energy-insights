@@ -87,6 +87,16 @@ export default function FileUploader({ onDataLoaded }: FileUploaderProps) {
           if (newRow.dataLeitura) {
             newRow.leituraDate = parseDate(newRow.dataLeitura);
           }
+          
+          if (newRow.mesAno) {
+            const parts = String(newRow.mesAno).split('/');
+            if (parts.length === 2) {
+              const month = parts[0].padStart(2, '0');
+              const year = parts[1].length === 2 ? `20${parts[1]}` : parts[1];
+              newRow.isoDate = `${year}-${month}-01`;
+            }
+          }
+
           newRow.constante = Number(newRow.constante);
           newRow.leituraAtiva = Number(newRow.leituraAtiva);
           newRow.consumoAtivoKwh = Number(newRow.consumoAtivoKwh);
@@ -96,16 +106,11 @@ export default function FileUploader({ onDataLoaded }: FileUploaderProps) {
           newRow.totalFatura = Number(String(newRow.totalFatura).replace(',', '.'));
           
           return newRow as EnergyData;
-        }).filter(item => item.mesAno && item.consumoAtivoKwh != null);
+        }).filter(item => item.mesAno && item.consumoAtivoKwh != null && item.isoDate);
         
-        const parseMesAno = (mesAno: string): Date => {
-          const [month, year] = mesAno.split('/');
-          return new Date(Number(year), Number(month) - 1, 1);
-        };
-
-        parsedData.sort((a, b) => parseMesAno(a.mesAno).getTime() - parseMesAno(b.mesAno).getTime());
+        parsedData.sort((a, b) => new Date(b.isoDate).getTime() - new Date(a.isoDate).getTime());
         
-        onDataLoaded(parsedData.reverse(), file.name);
+        onDataLoaded(parsedData, file.name);
       } catch (error) {
         console.error('Error processing file:', error);
         toast({

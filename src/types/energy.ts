@@ -12,4 +12,5 @@ export interface EnergyData {
   tipoFaturamento: string;
   totalFatura: number;
   leituraDate: Date;
+  isoDate: string; // Adicionado para ordenação
 }
