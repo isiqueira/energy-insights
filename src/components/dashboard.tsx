@@ -10,6 +10,7 @@ import { type EnergyData } from '@/types/energy';
 import { Button } from './ui/button';
 import { File, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
 import EnergyStats from './energy-stats';
+import SeasonAlert from './season-alert';
 
 interface DashboardProps {
   data: EnergyData[];
@@ -47,18 +48,21 @@ export default function Dashboard({ data, fileName, onReset }: DashboardProps) {
         </Button>
       </div>
 
-      <div className="flex items-center justify-center gap-4">
-        <Button variant="outline" size="icon" onClick={handlePreviousMonth} disabled={selectedMonthIndex === 0}>
-            <ChevronLeft className="h-4 w-4" />
-            <span className="sr-only">Mês Anterior</span>
-        </Button>
-        <div className="text-xl font-semibold text-center w-40">
-            {selectedMonthData.mesAno}
+      <div className="flex flex-col items-center justify-center gap-4">
+        <div className="flex items-center justify-center gap-4">
+          <Button variant="outline" size="icon" onClick={handlePreviousMonth} disabled={selectedMonthIndex === 0}>
+              <ChevronLeft className="h-4 w-4" />
+              <span className="sr-only">Mês Anterior</span>
+          </Button>
+          <div className="text-xl font-semibold text-center w-40">
+              {selectedMonthData.mesAno}
+          </div>
+          <Button variant="outline" size="icon" onClick={handleNextMonth} disabled={selectedMonthIndex === data.length - 1}>
+              <ChevronRight className="h-4 w-4" />
+              <span className="sr-only">Próximo Mês</span>
+          </Button>
         </div>
-        <Button variant="outline" size="icon" onClick={handleNextMonth} disabled={selectedMonthIndex === data.length - 1}>
-            <ChevronRight className="h-4 w-4" />
-            <span className="sr-only">Próximo Mês</span>
-        </Button>
+        <SeasonAlert mesAno={selectedMonthData.mesAno} />
       </div>
       
       <EnergyStats 
