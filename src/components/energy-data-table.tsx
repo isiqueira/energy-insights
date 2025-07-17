@@ -30,6 +30,10 @@ export const columns: ColumnDef<EnergyData>[] = [
     header: 'Month/Year',
   },
   {
+    accessorKey: 'medidor',
+    header: 'Medidor',
+  },
+  {
     accessorKey: 'leituraDate',
     header: ({ column }) => {
       return (
@@ -113,12 +117,20 @@ export default function EnergyDataTable({ data }: { data: EnergyData[] }) {
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
+      <div className="flex items-center gap-4 py-4">
         <Input
           placeholder="Filter by Month/Year..."
           value={(table.getColumn('mesAno')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
             table.getColumn('mesAno')?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
+        />
+        <Input
+          placeholder="Filter by Medidor..."
+          value={(table.getColumn('medidor')?.getFilterValue() as string) ?? ''}
+          onChange={(event) =>
+            table.getColumn('medidor')?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
