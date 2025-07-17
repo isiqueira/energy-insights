@@ -69,10 +69,10 @@ export default function EnergyStats({ data }: EnergyStatsProps) {
           {consumptionChange >= 0 ? <ArrowUp className="h-4 w-4 text-destructive" /> : <ArrowDown className="h-4 w-4 text-success" />}
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{formatNumber(latestMonth.consumoAtivoKwh)} kWh</div>
-          {previousMonth && <p className={`text-xs ${consumptionChange >= 0 ? 'text-destructive' : 'text-success'}`}>
-            {consumptionChange.toFixed(1).replace('.',',')}% do último mês
-          </p>}
+          <div className="text-2xl font-bold">{consumptionChange.toFixed(1).replace('.',',')}%</div>
+          <p className="text-xs text-muted-foreground">
+            {formatNumber(latestMonth.consumoAtivoKwh)} kWh no último mês
+          </p>
         </CardContent>
       </Card>
        <Card>
@@ -81,10 +81,10 @@ export default function EnergyStats({ data }: EnergyStatsProps) {
           {costChange >= 0 ? <ArrowUp className="h-4 w-4 text-destructive" /> : <ArrowDown className="h-4 w-4 text-success" />}
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{formatCurrency(latestMonth.totalFatura)}</div>
-          {previousMonth && <p className={`text-xs ${costChange >= 0 ? 'text-destructive' : 'text-success'}`}>
-            {costChange.toFixed(1).replace('.',',')}% do último mês
-          </p>}
+          <div className="text-2xl font-bold">{costChange.toFixed(1).replace('.',',')}%</div>
+          <p className="text-xs text-muted-foreground">
+             {formatCurrency(latestMonth.totalFatura)} no último mês
+          </p>
         </CardContent>
       </Card>
     </div>
