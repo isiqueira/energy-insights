@@ -70,7 +70,7 @@ function AnalysisPageContent() {
     return acc;
   }, {});
 
-  const years = Object.keys(seasonalData).sort();
+  const years = Object.keys(seasonalData).sort().reverse();
 
   const chartData = Object.entries(seasonalData).flatMap(([year, seasons]) => {
     return Object.entries(seasons).map(([season, values]) => ({
