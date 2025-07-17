@@ -22,31 +22,12 @@ import {
 } from '@tanstack/react-table';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { ArrowUpDown } from 'lucide-react';
+import { ArrowUpDown, ArrowDown, ArrowUp } from 'lucide-react';
 
 export const columns: ColumnDef<EnergyData>[] = [
   {
     accessorKey: 'mesAno',
     header: 'Mês/Ano',
-  },
-  {
-    accessorKey: 'medidor',
-    header: 'Medidor',
-  },
-  {
-    accessorKey: 'leituraDate',
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Data da Leitura
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => new Date(row.original.leituraDate).toLocaleDateString(),
   },
   {
     accessorKey: 'consumoAtivoKwh',
@@ -62,6 +43,35 @@ export const columns: ColumnDef<EnergyData>[] = [
       );
     },
     cell: ({ row }) => <div className="text-right">{row.original.consumoAtivoKwh.toFixed(2)}</div>,
+  },
+  {
+      id: 'monthVariation',
+      header: () => <div className="text-right">Variação Mês a Mês</div>,
+      cell: ({ row, table }) => {
+        const rowIndex = row.index;
+        const allData = table.options.data;
+  
+        if (rowIndex === 0) {
+          return <div className="text-right text-muted-foreground">-</div>;
+        }
+  
+        const currentConsumption = row.original.consumoAtivoKwh;
+        const previousConsumption = allData[rowIndex - 1].consumoAtivoKwh;
+  
+        if (previousConsumption === 0) {
+          return <div className="text-right text-muted-foreground">N/A</div>;
+        }
+  
+        const variation = ((currentConsumption - previousConsumption) / previousConsumption) * 100;
+        const isPositive = variation > 0;
+  
+        return (
+          <div className={`flex items-center justify-end gap-1 font-medium ${isPositive ? 'text-destructive' : 'text-success'}`}>
+            {isPositive ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />}
+            <span>{variation.toFixed(1).replace('.', ',')}%</span>
+          </div>
+        );
+      },
   },
   {
     accessorKey: 'totalFatura',
@@ -91,13 +101,26 @@ export const columns: ColumnDef<EnergyData>[] = [
     cell: ({ row }) => <div className="text-right">{row.original.mediaAtivaKwhDia.toFixed(2)}</div>
   },
   {
-    accessorKey: 'numDiasFaturamento',
-    header: 'Dias de Faturamento'
-  }
+    accessorKey: 'leituraDate',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Data da Leitura
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => new Date(row.original.leituraDate).toLocaleDateString(),
+  },
 ];
 
 export default function EnergyDataTable({ data }: { data: EnergyData[] }) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [sorting, setSorting] = React.useState<SortingState>([
+    { id: 'leituraDate', desc: true }
+  ]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
 
   const table = useReactTable({
@@ -123,14 +146,6 @@ export default function EnergyDataTable({ data }: { data: EnergyData[] }) {
           value={(table.getColumn('mesAno')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
             table.getColumn('mesAno')?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-        <Input
-          placeholder="Filtrar por Medidor..."
-          value={(table.getColumn('medidor')?.getFilterValue() as string) ?? ''}
-          onChange={(event) =>
-            table.getColumn('medidor')?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
