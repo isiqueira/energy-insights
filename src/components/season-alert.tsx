@@ -1,6 +1,6 @@
 'use client';
 
-import { Alert } from '@/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Sun, CloudSun, Snowflake, Leaf } from 'lucide-react';
 
 interface SeasonAlertProps {
@@ -21,25 +21,25 @@ const getSeason = (mesAno: string): Season => {
         return { 
             name: 'Verão', 
             icon: <Sun className="h-5 w-5" />, 
-            colorClass: 'text-chart-3'
+            colorClass: 'border-yellow-500/50 text-yellow-700 dark:text-yellow-400'
         };
     } else if (month >= 3 && month <= 5) {
         return { 
             name: 'Outono', 
             icon: <Leaf className="h-5 w-5" />, 
-            colorClass: 'text-chart-5'
+            colorClass: 'border-orange-500/50 text-orange-700 dark:text-orange-400'
         };
     } else if (month >= 6 && month <= 8) {
         return { 
             name: 'Inverno', 
             icon: <Snowflake className="h-5 w-5" />, 
-            colorClass: 'text-chart-1'
+            colorClass: 'border-blue-500/50 text-blue-700 dark:text-blue-400'
         };
     } else {
         return { 
             name: 'Primavera', 
             icon: <CloudSun className="h-5 w-5" />, 
-            colorClass: 'text-chart-2'
+            colorClass: 'border-green-500/50 text-green-700 dark:text-green-400'
         };
     }
 };
@@ -48,9 +48,11 @@ export default function SeasonAlert({ mesAno }: SeasonAlertProps) {
     const season = getSeason(mesAno);
 
     return (
-        <Alert className={`flex items-center justify-center gap-2 p-2 max-w-xs mx-auto border-0 bg-transparent ${season.colorClass}`}>
-            {season.icon}
-            <span className="font-semibold text-sm">{season.name}</span>
+        <Alert className={`max-w-xs mx-auto ${season.colorClass}`}>
+            <div className="flex items-center gap-2">
+                {season.icon}
+                <span className="font-semibold">{season.name}</span>
+            </div>
         </Alert>
     );
 }
