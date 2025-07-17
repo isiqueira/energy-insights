@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useMemo } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import EnergyChart from './energy-chart';
@@ -7,7 +8,7 @@ import EnergyDataTable from './energy-data-table';
 import AnomalyDetector from './anomaly-detector';
 import { type EnergyData } from '@/types/energy';
 import { Button } from './ui/button';
-import { File, RefreshCw } from 'lucide-react';
+import { File, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
 import EnergyStats from './energy-stats';
 
 interface DashboardProps {
@@ -17,6 +18,19 @@ interface DashboardProps {
 }
 
 export default function Dashboard({ data, fileName, onReset }: DashboardProps) {
+  const [selectedMonthIndex, setSelectedMonthIndex] = useState(data.length - 1);
+
+  const handlePreviousMonth = () => {
+    setSelectedMonthIndex((prevIndex) => Math.max(0, prevIndex - 1));
+  };
+
+  const handleNextMonth = () => {
+    setSelectedMonthIndex((prevIndex) => Math.min(data.length - 1, prevIndex + 1));
+  };
+
+  const selectedMonthData = data[selectedMonthIndex];
+  const previousMonthData = selectedMonthIndex > 0 ? data[selectedMonthIndex - 1] : null;
+
   return (
     <div className="space-y-8">
        <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
@@ -33,7 +47,25 @@ export default function Dashboard({ data, fileName, onReset }: DashboardProps) {
         </Button>
       </div>
 
-      <EnergyStats data={data} />
+      <div className="flex items-center justify-center gap-4">
+        <Button variant="outline" size="icon" onClick={handlePreviousMonth} disabled={selectedMonthIndex === 0}>
+            <ChevronLeft className="h-4 w-4" />
+            <span className="sr-only">Mês Anterior</span>
+        </Button>
+        <div className="text-xl font-semibold text-center w-40">
+            {selectedMonthData.mesAno}
+        </div>
+        <Button variant="outline" size="icon" onClick={handleNextMonth} disabled={selectedMonthIndex === data.length - 1}>
+            <ChevronRight className="h-4 w-4" />
+            <span className="sr-only">Próximo Mês</span>
+        </Button>
+      </div>
+      
+      <EnergyStats 
+        allData={data} 
+        currentMonthData={selectedMonthData} 
+        previousMonthData={previousMonthData} 
+      />
       
       <Tabs defaultValue="overview" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
