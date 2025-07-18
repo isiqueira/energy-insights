@@ -3,11 +3,12 @@
 import { Suspense, useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { type EnergyData } from '@/types/energy';
+import { type WaterData } from '@/types/water';
 import { getSeason } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Home, ChevronLeft, ChevronRight, ArrowUp, ArrowDown } from 'lucide-react';
+import { Home, ChevronLeft, ChevronRight, ArrowUp, ArrowDown, Trophy, Droplets, Zap } from 'lucide-react';
 import { Bar, BarChart, CartesianGrid, Cell, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import SeasonLegend from '@/components/season-legend';
 
@@ -41,25 +42,34 @@ const renderVariation = (variation: number) => {
     );
 }
 
+const formatCurrency = (num: number) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(num);
+
 function AnalysisPageContent() {
-  const [data, setData] = useState<EnergyData[] | null>(null);
+  const [energyData, setEnergyData] = useState<EnergyData[] | null>(null);
+  const [waterData, setWaterData] = useState<WaterData[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedYearIndex, setSelectedYearIndex] = useState<number>(0);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const dataString = localStorage.getItem('energyData');
-      if (dataString) {
-        setData(JSON.parse(dataString));
+      const energyDataString = localStorage.getItem('energyData');
+      if (energyDataString) {
+        setEnergyData(JSON.parse(energyDataString));
       }
+      
+      const waterDataString = localStorage.getItem('waterData');
+      if (waterDataString) {
+        setWaterData(JSON.parse(waterDataString));
+      }
+
       setLoading(false);
     }
   }, []);
 
   const { seasonalData, years } = useMemo(() => {
-    if (!data) return { seasonalData: {}, years: [] };
+    if (!energyData) return { seasonalData: {}, years: [] };
 
-    const processedData = data.reduce<SeasonalData>((acc, item) => {
+    const processedData = energyData.reduce<SeasonalData>((acc, item) => {
       if (!item.isoDate) return acc;
       const year = item.isoDate.split('-')[0];
 
@@ -82,13 +92,23 @@ function AnalysisPageContent() {
     
     const sortedYears = Object.keys(processedData).sort((a, b) => parseInt(b) - parseInt(a));
     return { seasonalData: processedData, years: sortedYears };
-  }, [data]);
+  }, [energyData]);
+
+  const highestEnergyBill = useMemo(() => {
+    if (!energyData || energyData.length === 0) return null;
+    return energyData.reduce((max, current) => (current.totalFatura > max.totalFatura ? current : max));
+  }, [energyData]);
+
+  const highestWaterBill = useMemo(() => {
+    if (!waterData || waterData.length === 0) return null;
+    return waterData.reduce((max, current) => (current.valor > max.valor ? current : max));
+  }, [waterData]);
   
   if (loading) {
     return <div className="text-center p-8">Carregando dados...</div>;
   }
 
-  if (!data) {
+  if (!energyData) {
     return (
       <div className="text-center">
         <p>Dados não encontrados. Por favor, carregue um arquivo na página inicial primeiro.</p>
@@ -109,7 +129,8 @@ function AnalysisPageContent() {
 
   const selectedYear = years[selectedYearIndex];
   const yearData = seasonalData[selectedYear] || {};
-  const prevYearData = seasonalData[String(parseInt(selectedYear) - 1)] || {};
+  const prevYear = String(parseInt(selectedYear) - 1);
+  const prevYearData = seasonalData[prevYear] || {};
   
   const chartData = Object.entries(yearData).map(([season, values]) => ({
     name: season,
@@ -175,11 +196,11 @@ function AnalysisPageContent() {
             </ResponsiveContainer>
           </CardContent>
         </Card>
-
         
-        <Card className="mb-6">
+        <Card className="mb-8">
           <CardHeader>
             <CardTitle>Resumo do Ano: {selectedYear}</CardTitle>
+            <CardDescription>Comparativo de consumo e custo com o ano anterior ({prevYear}).</CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
@@ -212,9 +233,9 @@ function AnalysisPageContent() {
                     <TableRow key={season}>
                       <TableCell className="font-medium">{season}</TableCell>
                       <TableCell className="text-right">{currentValues.totalConsumption.toFixed(2)}</TableCell>
-                      <TableCell className="text-right">{renderVariation(consumptionVariation)}</TableCell>
-                      <TableCell className="text-right">{new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(currentValues.totalCost)}</TableCell>
-                      <TableCell className="text-right">{renderVariation(costVariation)}</TableCell>
+                      <TableCell>{renderVariation(consumptionVariation)}</TableCell>
+                      <TableCell className="text-right">{formatCurrency(currentValues.totalCost)}</TableCell>
+                      <TableCell>{renderVariation(costVariation)}</TableCell>
                     </TableRow>
                   )
                 })}
@@ -222,8 +243,46 @@ function AnalysisPageContent() {
             </Table>
           </CardContent>
         </Card>
-        
 
+        <div className="grid md:grid-cols-2 gap-8 mb-8">
+            {highestEnergyBill && (
+                <Card className="bg-secondary/50">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                           <Trophy className="text-primary" /> Maior Conta de Energia
+                        </CardTitle>
+                        <CardDescription>
+                           O pico de gastos com energia elétrica registrado nos seus dados.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                        <p className="text-2xl font-bold">{formatCurrency(highestEnergyBill.totalFatura)}</p>
+                        <p className="text-muted-foreground"><span className="font-semibold">Mês/Ano:</span> {highestEnergyBill.mesAno}</p>
+                        <p className="text-muted-foreground"><span className="font-semibold">Consumo:</span> {highestEnergyBill.consumoAtivoKwh.toFixed(0)} kWh</p>
+                        <p className="text-muted-foreground"><span className="font-semibold">Estação:</span> {getSeason(highestEnergyBill.mesAno)}</p>
+                    </CardContent>
+                </Card>
+            )}
+             {highestWaterBill && (
+                <Card className="bg-secondary/50">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                           <Trophy className="text-primary" /> Maior Conta de Água
+                        </CardTitle>
+                        <CardDescription>
+                           O pico de gastos com água registrado nos seus dados.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                        <p className="text-2xl font-bold">{formatCurrency(highestWaterBill.valor)}</p>
+                        <p className="text-muted-foreground"><span className="font-semibold">Mês/Ano:</span> {highestWaterBill.mesAno}</p>
+                        <p className="text-muted-foreground"><span className="font-semibold">Consumo:</span> {highestWaterBill.consumo} m³</p>
+                        <p className="text-muted-foreground"><span className="font-semibold">Estação:</span> {getSeason(highestWaterBill.mesAno)}</p>
+                    </CardContent>
+                </Card>
+            )}
+        </div>
+        
         <Card>
             <CardHeader>
                 <CardTitle>Análise de Temperatura (Em Breve)</CardTitle>
