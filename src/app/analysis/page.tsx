@@ -60,10 +60,8 @@ function AnalysisPageContent() {
     if (!data) return { seasonalData: {}, years: [] };
 
     const processedData = data.reduce<SeasonalData>((acc, item) => {
-      const [month, yearStr] = item.mesAno.split('/');
-      if (!yearStr) return acc;
-      
-      const year = yearStr.length === 2 ? `20${yearStr}` : yearStr;
+      if (!item.isoDate) return acc;
+      const year = item.isoDate.split('-')[0];
 
       const season = getSeason(item.mesAno);
       if (!acc[year]) {
@@ -94,8 +92,8 @@ function AnalysisPageContent() {
     return (
       <div className="text-center">
         <p>Dados não encontrados. Por favor, carregue um arquivo na página inicial primeiro.</p>
-        <Link href="/">
-          <Button className="mt-4">Voltar para o Início</Button>
+        <Link href="/energy">
+          <Button className="mt-4">Carregar Arquivo</Button>
         </Link>
       </div>
     );
@@ -127,10 +125,10 @@ function AnalysisPageContent() {
             <h1 className="text-4xl font-bold text-primary font-headline">Análise Sazonal</h1>
             <p className="text-muted-foreground mt-2">Compare o consumo e o custo de energia por estação do ano.</p>
           </div>
-          <Link href="/">
+          <Link href="/energy">
             <Button variant="outline">
               <Home className="mr-2 h-4 w-4" />
-              Voltar ao Painel
+              Voltar ao Painel de Energia
             </Button>
           </Link>
         </header>
