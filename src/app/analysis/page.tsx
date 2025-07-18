@@ -3,12 +3,11 @@
 import { Suspense, useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { type EnergyData } from '@/types/energy';
-import { type WaterData } from '@/types/water';
 import { getSeason } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Home, ChevronLeft, ChevronRight, ArrowUp, ArrowDown, Trophy, Droplets, Zap } from 'lucide-react';
+import { Home, ChevronLeft, ChevronRight, ArrowUp, ArrowDown } from 'lucide-react';
 import { Bar, BarChart, CartesianGrid, Cell, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import SeasonLegend from '@/components/season-legend';
 
@@ -46,7 +45,6 @@ const formatCurrency = (num: number) => new Intl.NumberFormat("pt-BR", { style: 
 
 function AnalysisPageContent() {
   const [energyData, setEnergyData] = useState<EnergyData[] | null>(null);
-  const [waterData, setWaterData] = useState<WaterData[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedYearIndex, setSelectedYearIndex] = useState<number>(0);
 
@@ -57,11 +55,6 @@ function AnalysisPageContent() {
         setEnergyData(JSON.parse(energyDataString));
       }
       
-      const waterDataString = localStorage.getItem('waterData');
-      if (waterDataString) {
-        setWaterData(JSON.parse(waterDataString));
-      }
-
       setLoading(false);
     }
   }, []);
@@ -94,15 +87,6 @@ function AnalysisPageContent() {
     return { seasonalData: processedData, years: sortedYears };
   }, [energyData]);
 
-  const highestEnergyBill = useMemo(() => {
-    if (!energyData || energyData.length === 0) return null;
-    return energyData.reduce((max, current) => (current.totalFatura > max.totalFatura ? current : max));
-  }, [energyData]);
-
-  const highestWaterBill = useMemo(() => {
-    if (!waterData || waterData.length === 0) return null;
-    return waterData.reduce((max, current) => (current.valor > max.valor ? current : max));
-  }, [waterData]);
   
   if (loading) {
     return <div className="text-center p-8">Carregando dados...</div>;
@@ -244,45 +228,6 @@ function AnalysisPageContent() {
           </CardContent>
         </Card>
 
-        <div className="grid md:grid-cols-2 gap-8 mb-8">
-            {highestEnergyBill && (
-                <Card className="bg-secondary/50">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                           <Trophy className="text-primary" /> Maior Conta de Energia
-                        </CardTitle>
-                        <CardDescription>
-                           O pico de gastos com energia elétrica registrado nos seus dados.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                        <p className="text-2xl font-bold">{formatCurrency(highestEnergyBill.totalFatura)}</p>
-                        <p className="text-muted-foreground"><span className="font-semibold">Mês/Ano:</span> {highestEnergyBill.mesAno}</p>
-                        <p className="text-muted-foreground"><span className="font-semibold">Consumo:</span> {highestEnergyBill.consumoAtivoKwh.toFixed(0)} kWh</p>
-                        <p className="text-muted-foreground"><span className="font-semibold">Estação:</span> {getSeason(highestEnergyBill.mesAno)}</p>
-                    </CardContent>
-                </Card>
-            )}
-             {highestWaterBill && (
-                <Card className="bg-secondary/50">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                           <Trophy className="text-primary" /> Maior Conta de Água
-                        </CardTitle>
-                        <CardDescription>
-                           O pico de gastos com água registrado nos seus dados.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                        <p className="text-2xl font-bold">{formatCurrency(highestWaterBill.valor)}</p>
-                        <p className="text-muted-foreground"><span className="font-semibold">Mês/Ano:</span> {highestWaterBill.mesAno}</p>
-                        <p className="text-muted-foreground"><span className="font-semibold">Consumo:</span> {highestWaterBill.consumo} m³</p>
-                        <p className="text-muted-foreground"><span className="font-semibold">Estação:</span> {getSeason(highestWaterBill.mesAno)}</p>
-                    </CardContent>
-                </Card>
-            )}
-        </div>
-        
         <Card>
             <CardHeader>
                 <CardTitle>Análise de Temperatura (Em Breve)</CardTitle>
