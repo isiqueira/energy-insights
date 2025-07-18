@@ -1,13 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import WaterChart from './water-chart';
 import WaterDataTable from './water-data-table';
 import { type WaterData } from '@/types/water';
 import { Button } from './ui/button';
-import { File, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
+import { File, RefreshCw, ChevronLeft, ChevronRight, BarChart3 } from 'lucide-react';
 import WaterStats from './water-stats';
 import SeasonAlert from './season-alert';
 
@@ -41,10 +42,18 @@ export default function WaterDashboard({ data, fileName, onReset }: WaterDashboa
             <span>{fileName}</span>
           </div>
         </div>
-        <Button onClick={onReset} variant="outline" className="w-full sm:w-auto">
-          <RefreshCw className="mr-2 h-4 w-4" />
-          Carregar Outro Arquivo
-        </Button>
+        <div className='flex flex-col sm:flex-row gap-2'>
+            <Link href="/water-analysis" passHref>
+                <Button variant="outline" className="w-full sm:w-auto">
+                    <BarChart3 className="mr-2 h-4 w-4" />
+                    Análise Sazonal
+                </Button>
+            </Link>
+            <Button onClick={onReset} variant="outline" className="w-full sm:w-auto">
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Carregar Outro Arquivo
+            </Button>
+        </div>
       </div>
 
       <div className="flex flex-col items-center justify-center gap-4">
