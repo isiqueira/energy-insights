@@ -9,6 +9,7 @@ import { type WaterData } from '@/types/water';
 import { Button } from './ui/button';
 import { File, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
 import WaterStats from './water-stats';
+import SeasonAlert from './season-alert';
 
 interface WaterDashboardProps {
   data: WaterData[];
@@ -60,6 +61,7 @@ export default function WaterDashboard({ data, fileName, onReset }: WaterDashboa
               <span className="sr-only">Próximo Mês</span>
           </Button>
         </div>
+        <SeasonAlert mesAno={selectedMonthData.mesAno} />
       </div>
       
       <WaterStats 

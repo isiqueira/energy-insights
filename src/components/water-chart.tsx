@@ -1,8 +1,10 @@
 'use client';
 
-import { Bar, ComposedChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Line } from 'recharts';
+import { Bar, ComposedChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Line, Cell } from 'recharts';
 import { type WaterData } from '@/types/water';
 import { ChartContainer, ChartTooltipContent, ChartConfig } from '@/components/ui/chart';
+import { getSeason } from '@/lib/utils';
+import SeasonLegend from './season-legend';
 
 interface WaterChartProps {
   data: WaterData[];
@@ -11,7 +13,6 @@ interface WaterChartProps {
 const chartConfig = {
   consumption: {
     label: "Consumo (m³)",
-    color: "hsl(var(--chart-1))",
   },
   cost: {
     label: "Custo (R$)",
@@ -19,11 +20,19 @@ const chartConfig = {
   }
 } satisfies ChartConfig;
 
+const seasonColors: { [key: string]: string } = {
+  'Verão': 'hsl(var(--chart-3))',
+  'Outono': 'hsl(var(--chart-5))',
+  'Inverno': 'hsl(var(--chart-1))',
+  'Primavera': 'hsl(var(--chart-2))',
+};
+
 export default function WaterChart({ data }: WaterChartProps) {
   const chartData = data.map(item => ({
     date: item.mesAno,
     consumption: item.consumo,
     cost: item.valor,
+    season: getSeason(item.mesAno),
   }));
 
   return (
@@ -60,9 +69,20 @@ export default function WaterChart({ data }: WaterChartProps) {
             stroke="var(--color-cost)"
             label={{ value: 'Custo (R$)', angle: 90, position: 'insideRight', style: { textAnchor: 'middle' }, offset: -15 }}
           />
-          <Tooltip content={<ChartTooltipContent />} />
-          <Legend />
-          <Bar dataKey="consumption" fill="var(--color-consumption)" yAxisId="left" radius={[4, 4, 0, 0]} />
+          <Tooltip 
+            formatter={(value, name) => {
+                if (name === 'consumption') return [`${(value as number).toFixed(0)} m³`, "Consumo"];
+                if (name === 'cost') return [new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value as number), "Custo"];
+                return [value, name];
+            }}
+            cursor={{fill: 'hsl(var(--muted))'}}
+          />
+          <Legend content={<SeasonLegend />} />
+          <Bar dataKey="consumption" yAxisId="left" radius={[4, 4, 0, 0]}>
+             {chartData.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={seasonColors[entry.season as keyof typeof seasonColors]} />
+            ))}
+          </Bar>
           <Line type="monotone" dataKey="cost" yAxisId="right" stroke="var(--color-cost)" strokeWidth={2} dot={{ fill: "var(--color-cost)" }} activeDot={{ r: 6 }} />
         </ComposedChart>
       </ChartContainer>
