@@ -10,21 +10,32 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export default function Home() {
   const [latestEnergyData, setLatestEnergyData] = useState<EnergyData | null>(null);
+  const [hasWaterData, setHasWaterData] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     try {
-      const dataString = localStorage.getItem('energyData');
-      if (dataString) {
-        const data: EnergyData[] = JSON.parse(dataString);
+      const energyDataString = localStorage.getItem('energyData');
+      if (energyDataString) {
+        const data: EnergyData[] = JSON.parse(energyDataString);
         if (data.length > 0) {
-          // Assuming data is sorted with the latest first
           setLatestEnergyData(data[0]);
         }
       }
+
+      const waterDataString = localStorage.getItem('waterData');
+      if (waterDataString) {
+          const data = JSON.parse(waterDataString);
+          if (data && data.length > 0) {
+              setHasWaterData(true);
+          }
+      }
+
     } catch (error) {
       console.error("Failed to parse data from localStorage", error);
+      // Clear potentially corrupted data
       localStorage.removeItem('energyData');
+      localStorage.removeItem('waterData');
     }
     setLoading(false);
   }, []);
@@ -55,39 +66,50 @@ export default function Home() {
               <Zap className="h-6 w-6 text-primary" />
             </CardHeader>
             <CardContent className="flex-grow">
-              <div className="text-3xl font-bold text-primary mb-1">
-                {loading ? <Skeleton className="h-8 w-32" /> : formatCurrency(latestEnergyData?.totalFatura)}
-              </div>
-              {loading ? (
-                <Skeleton className="h-4 w-24" />
-              ) : (
-                <p className="text-xs text-muted-foreground">
-                  {getMonthDescription(latestEnergyData)}
-                </p>
-              )}
+                <div className="text-3xl font-bold text-primary mb-1">
+                    {loading ? <Skeleton className="h-8 w-32" /> : formatCurrency(latestEnergyData?.totalFatura)}
+                </div>
+                {loading ? (
+                    <Skeleton className="h-4 w-24" />
+                ) : (
+                    <div className="text-xs text-muted-foreground">
+                        {getMonthDescription(latestEnergyData) || 'Carregue seu arquivo'}
+                    </div>
+                )}
             </CardContent>
             <div className="p-6 pt-0 mt-auto">
-              <Link href={latestEnergyData ? "/energy" : "/"} passHref>
-                <Button className="w-full" disabled={!latestEnergyData}>
+              <Link href="/energy" passHref>
+                <Button className="w-full">
                   Analisar Detalhes <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
             </div>
           </Card>
 
-          {/* Card de Água (Placeholder) */}
-          <Card className="flex flex-col bg-muted/40">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-lg font-medium text-muted-foreground">Água</CardTitle>
-              <Droplets className="h-6 w-6 text-muted-foreground" />
+          {/* Card de Água */}
+          <Card className="flex flex-col">
+             <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-lg font-medium">Água</CardTitle>
+                <Droplets className="h-6 w-6 text-primary" />
             </CardHeader>
-            <CardContent className="flex-grow flex flex-col items-center justify-center text-center">
-                <p className="text-sm text-muted-foreground">Em breve você poderá analisar suas contas de água aqui.</p>
+             <CardContent className="flex-grow">
+                 {loading ? (
+                    <Skeleton className="h-8 w-32" />
+                ) : (
+                    <div className="text-3xl font-bold text-primary mb-1">
+                        {hasWaterData ? 'Dados Carregados' : '---'}
+                    </div>
+                )}
+                 <div className="text-xs text-muted-foreground">
+                    {hasWaterData ? 'Acesse para analisar' : 'Carregue seu arquivo'}
+                </div>
             </CardContent>
              <div className="p-6 pt-0 mt-auto">
-                 <Button className="w-full" disabled>
-                  Analisar Detalhes <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
+                <Link href="/water" passHref>
+                    <Button className="w-full">
+                        Analisar Detalhes <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                </Link>
             </div>
           </Card>
 

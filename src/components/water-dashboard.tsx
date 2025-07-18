@@ -1,0 +1,101 @@
+'use client';
+
+import { useState } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import WaterChart from './water-chart';
+import WaterDataTable from './water-data-table';
+import { type WaterData } from '@/types/water';
+import { Button } from './ui/button';
+import { File, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
+import WaterStats from './water-stats';
+
+interface WaterDashboardProps {
+  data: WaterData[];
+  fileName: string;
+  onReset: () => void;
+}
+
+export default function WaterDashboard({ data, fileName, onReset }: WaterDashboardProps) {
+  const [selectedMonthIndex, setSelectedMonthIndex] = useState(0);
+
+  const handlePreviousMonth = () => {
+    setSelectedMonthIndex((prevIndex) => Math.min(data.length - 1, prevIndex + 1));
+  };
+
+  const handleNextMonth = () => {
+    setSelectedMonthIndex((prevIndex) => Math.max(0, prevIndex - 1));
+  };
+
+  const selectedMonthData = data[selectedMonthIndex];
+  const previousMonthData = selectedMonthIndex < data.length - 1 ? data[selectedMonthIndex + 1] : null;
+
+  return (
+    <div className="space-y-8">
+       <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+        <div>
+          <h2 className="text-2xl font-bold">Painel de Consumo de Água</h2>
+          <div className="flex items-center text-muted-foreground mt-1">
+            <File className="mr-2 h-4 w-4" />
+            <span>{fileName}</span>
+          </div>
+        </div>
+        <Button onClick={onReset} variant="outline" className="w-full sm:w-auto">
+          <RefreshCw className="mr-2 h-4 w-4" />
+          Carregar Outro Arquivo
+        </Button>
+      </div>
+
+      <div className="flex flex-col items-center justify-center gap-4">
+        <div className="flex items-center justify-center gap-4">
+          <Button variant="outline" size="icon" onClick={handlePreviousMonth} disabled={selectedMonthIndex === data.length - 1}>
+              <ChevronLeft className="h-4 w-4" />
+              <span className="sr-only">Mês Anterior</span>
+          </Button>
+          <div className="text-xl font-semibold text-center w-40">
+              {selectedMonthData.mesAno}
+          </div>
+          <Button variant="outline" size="icon" onClick={handleNextMonth} disabled={selectedMonthIndex === 0}>
+              <ChevronRight className="h-4 w-4" />
+              <span className="sr-only">Próximo Mês</span>
+          </Button>
+        </div>
+      </div>
+      
+      <WaterStats 
+        allData={data} 
+        currentMonthData={selectedMonthData} 
+        previousMonthData={previousMonthData} 
+      />
+      
+      <Tabs defaultValue="overview" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="overview">Visão Geral</TabsTrigger>
+          <TabsTrigger value="data">Tabela de Dados</TabsTrigger>
+        </TabsList>
+        <TabsContent value="overview">
+          <Card className="mt-4">
+            <CardHeader>
+              <CardTitle>Consumo e Custo ao Longo do Tempo</CardTitle>
+              <CardDescription>Uma visão combinada do seu consumo mensal de água (m³) e o valor total da fatura (R$).</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <WaterChart data={data} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="data">
+          <Card className="mt-4">
+            <CardHeader>
+              <CardTitle>Dados Detalhados de Água</CardTitle>
+              <CardDescription>Ordene e filtre seu histórico completo de consumo.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <WaterDataTable data={data} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
