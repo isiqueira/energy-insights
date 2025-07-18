@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { type EnergyData } from '@/types/energy';
+import { type WaterData } from '@/types/water';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Zap, Droplets, Phone, ArrowRight } from 'lucide-react';
@@ -10,7 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export default function Home() {
   const [latestEnergyData, setLatestEnergyData] = useState<EnergyData | null>(null);
-  const [hasWaterData, setHasWaterData] = useState(false);
+  const [latestWaterData, setLatestWaterData] = useState<WaterData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -25,9 +26,9 @@ export default function Home() {
 
       const waterDataString = localStorage.getItem('waterData');
       if (waterDataString) {
-          const data = JSON.parse(waterDataString);
+          const data: WaterData[] = JSON.parse(waterDataString);
           if (data && data.length > 0) {
-              setHasWaterData(true);
+              setLatestWaterData(data[0]);
           }
       }
 
@@ -41,12 +42,12 @@ export default function Home() {
   }, []);
   
   const formatCurrency = (num: number | undefined) => {
-    if (num === undefined) return <Skeleton className="h-8 w-32" />;
+    if (num === undefined) return <Skeleton className="h-8 w-24" />;
     return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(num);
   }
 
-  const getMonthDescription = (data: EnergyData | null) => {
-      if (!data) return null;
+  const getMonthDescription = (data: EnergyData | WaterData | null) => {
+      if (!data) return 'Carregue seu arquivo';
       return `Fatura de ${data.mesAno}`;
   }
 
@@ -69,13 +70,12 @@ export default function Home() {
                 <div className="text-3xl font-bold text-primary mb-1">
                     {loading ? <Skeleton className="h-8 w-32" /> : formatCurrency(latestEnergyData?.totalFatura)}
                 </div>
-                {loading ? (
-                    <Skeleton className="h-4 w-24" />
-                ) : (
-                    <div className="text-xs text-muted-foreground">
-                        {getMonthDescription(latestEnergyData) || 'Carregue seu arquivo'}
-                    </div>
-                )}
+                <div className="text-sm text-muted-foreground mb-2">
+                    {loading ? <Skeleton className="h-5 w-20" /> : latestEnergyData ? `${latestEnergyData.consumoAtivoKwh.toFixed(0)} kWh` : ''}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                    {loading ? <Skeleton className="h-4 w-24" /> : getMonthDescription(latestEnergyData)}
+                </div>
             </CardContent>
             <div className="p-6 pt-0 mt-auto">
               <Link href="/energy" passHref>
@@ -93,15 +93,14 @@ export default function Home() {
                 <Droplets className="h-6 w-6 text-primary" />
             </CardHeader>
              <CardContent className="flex-grow">
-                 {loading ? (
-                    <Skeleton className="h-8 w-32" />
-                ) : (
-                    <div className="text-3xl font-bold text-primary mb-1">
-                        {hasWaterData ? 'Dados Carregados' : '---'}
-                    </div>
-                )}
+                <div className="text-3xl font-bold text-primary mb-1">
+                    {loading ? <Skeleton className="h-8 w-32" /> : formatCurrency(latestWaterData?.valor)}
+                </div>
+                <div className="text-sm text-muted-foreground mb-2">
+                    {loading ? <Skeleton className="h-5 w-20" /> : latestWaterData ? `${latestWaterData.consumo} m³` : ''}
+                </div>
                  <div className="text-xs text-muted-foreground">
-                    {hasWaterData ? 'Acesse para analisar' : 'Carregue seu arquivo'}
+                    {loading ? <Skeleton className="h-4 w-24" /> : getMonthDescription(latestWaterData)}
                 </div>
             </CardContent>
              <div className="p-6 pt-0 mt-auto">
