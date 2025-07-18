@@ -35,7 +35,7 @@ export default function Home() {
   }
 
   const getMonthDescription = (data: EnergyData | null) => {
-      if (!data) return <Skeleton className="h-4 w-24" />;
+      if (!data) return null;
       return `Fatura de ${data.mesAno}`;
   }
 
@@ -58,9 +58,13 @@ export default function Home() {
               <div className="text-3xl font-bold text-primary mb-1">
                 {loading ? <Skeleton className="h-8 w-32" /> : formatCurrency(latestEnergyData?.totalFatura)}
               </div>
-              <p className="text-xs text-muted-foreground">
-                {loading ? <Skeleton className="h-4 w-24" /> : getMonthDescription(latestEnergyData)}
-              </p>
+              {loading ? (
+                <Skeleton className="h-4 w-24" />
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  {getMonthDescription(latestEnergyData)}
+                </p>
+              )}
             </CardContent>
             <div className="p-6 pt-0 mt-auto">
               <Link href={latestEnergyData ? "/energy" : "/"} passHref>
