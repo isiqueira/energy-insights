@@ -4,7 +4,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { Home, ClipboardCheck } from 'lucide-react';
+import { Home } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 const choresData = [
   {
@@ -75,7 +76,10 @@ export default function ChoresPage() {
           {choresData.map((person) => (
             <Card key={person.responsavel} className="flex flex-col">
               <CardHeader>
-                <CardTitle className="text-xl text-primary">{person.responsavel}</CardTitle>
+                <div className="flex justify-between items-center">
+                    <CardTitle className="text-xl text-primary">{person.responsavel}</CardTitle>
+                    <Badge variant="secondary">{person.tarefas.length} tarefas</Badge>
+                </div>
               </CardHeader>
               <CardContent className="flex-grow">
                 <ul className="space-y-2 text-sm text-muted-foreground list-disc pl-5">
