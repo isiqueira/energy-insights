@@ -78,7 +78,7 @@ export default function ChoresPage() {
               <CardHeader>
                 <div className="flex justify-between items-center">
                     <CardTitle className="text-xl text-primary">{person.responsavel}</CardTitle>
-                    <Badge variant="secondary">{person.tarefas.length} tarefas</Badge>
+                    <Badge variant="secondary" className="bg-accent text-accent-foreground hover:bg-accent/80">{person.tarefas.length} tarefas</Badge>
                 </div>
               </CardHeader>
               <CardContent className="flex-grow">
