@@ -62,9 +62,9 @@ export default function Home() {
   }
 
   const getMonthDescription = (data: EnergyData | WaterData | null) => {
-      if (loading) return <Skeleton className="h-4 w-24" />;
-      if (!data) return 'Carregue seu arquivo';
-      return `Fatura de ${data.mesAno}`;
+      if (loading) return <div className="text-xs text-muted-foreground"><Skeleton className="h-4 w-24" /></div>;
+      if (!data) return <div className="text-xs text-muted-foreground">Carregue seu arquivo</div>;
+      return <div className="text-xs text-muted-foreground">{`Fatura de ${data.mesAno}`}</div>;
   }
 
   return (
@@ -88,9 +88,7 @@ export default function Home() {
                 <div className="text-sm text-muted-foreground mb-2">
                     {loading ? <Skeleton className="h-5 w-20" /> : latestEnergyData ? `${latestEnergyData.consumoAtivoKwh.toFixed(0)} kWh` : ''}
                 </div>
-                <div className="text-xs text-muted-foreground">
-                    {getMonthDescription(latestEnergyData)}
-                </div>
+                {getMonthDescription(latestEnergyData)}
             </CardContent>
             <div className="p-6 pt-0 mt-auto">
               <Link href="/energy" passHref>
@@ -113,9 +111,7 @@ export default function Home() {
                 <div className="text-sm text-muted-foreground mb-2">
                     {loading ? <Skeleton className="h-5 w-20" /> : latestWaterData ? `${latestWaterData.consumo} m³` : ''}
                 </div>
-                 <div className="text-xs text-muted-foreground">
-                    {getMonthDescription(latestWaterData)}
-                </div>
+                 {getMonthDescription(latestWaterData)}
             </CardContent>
              <div className="p-6 pt-0 mt-auto">
                 <Link href="/water" passHref>
