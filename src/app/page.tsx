@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -6,7 +7,7 @@ import { type EnergyData } from '@/types/energy';
 import { type WaterData } from '@/types/water';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Zap, Droplets, Phone, ArrowRight, Trophy } from 'lucide-react';
+import { Zap, Droplets, Phone, ArrowRight, Trophy, ClipboardCheck } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getSeason } from '@/lib/utils';
 
@@ -74,7 +75,7 @@ export default function Home() {
           <p className="text-muted-foreground mt-2">Sua visão centralizada sobre os custos de consumo da sua casa.</p>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <Card className="flex flex-col">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-lg font-medium">Energia</CardTitle>
@@ -125,18 +126,22 @@ export default function Home() {
             </div>
           </Card>
 
-          <Card className="flex flex-col bg-muted/40">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-lg font-medium text-muted-foreground">Telefonia</CardTitle>
-              <Phone className="h-6 w-6 text-muted-foreground" />
+           <Card className="flex flex-col">
+             <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-lg font-medium">Tarefas da Casa</CardTitle>
+                <ClipboardCheck className="h-6 w-6 text-primary" />
             </CardHeader>
-             <CardContent className="flex-grow flex flex-col items-center justify-center text-center">
-                <p className="text-sm text-muted-foreground">Em breve você poderá analisar suas contas de telefone e internet.</p>
+             <CardContent className="flex-grow">
+                <p className="text-sm text-muted-foreground">
+                    Organize e visualize as responsabilidades de manutenção e limpeza do lar.
+                </p>
             </CardContent>
              <div className="p-6 pt-0 mt-auto">
-                 <Button className="w-full" disabled>
-                  Analisar Detalhes <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
+                <Link href="/chores" passHref>
+                    <Button className="w-full">
+                        Ver Quadro <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                </Link>
             </div>
           </Card>
         </div>
